@@ -10,25 +10,24 @@ import Image from "next/image";
 const benefits = [
   {
     id: 1,
-    title: "Large network of potential buyers",
-    text: `First and foremost, we have a large network of potential buyers. As the largest luxury dealership in the state, we have a constant stream of high-end car enthusiasts coming through our doors and browsing our inventory. This means that your vehicle will be seen by a large audience, increasing the chances of a successful sale.`,
+    title: "We have a large network of potential buyers.",
+    text: `Our network of potential buyers is extensive. Our business is booming. We're experiencing the fastest growth and market expansion in the industry. We have a constant stream of high-end car enthusiasts coming through our doors and browsing our inventory. This means that your vehicle will be seen by a large audience, increasing the chances of a successful sale.`,
   },
   {
     id: 2,
-    title: "Experienced sales professionals",
-    text: `In addition to our wide reach, we also have a team of experienced sales professionals on hand to represent your vehicle. Our team is trained to showcase the unique features and benefits of each consigned vehicle, and to negotiate the best possible price on your behalf. We handle all aspects of the sales process, from fielding inquiries to closing the deal, so you can sit back and relax while we take care of everything.`,
+    title: "We have the best sales professionals.",
+    text: `Our wide reach and experienced sales professionals will represent your vehicle. Our team is trained to showcase the unique features and benefits of each consigned vehicle and to negotiate the best possible price on your behalf. We handle all aspects of the sales process, from fielding inquiries to closing the deal. You can sit back and relax while we take care of everything.`,
   },
   {
     id: 3,
-    title: "Vehicle detailing and reconditioning",
-    text: `We don’t just stop at the sale. We also offer a range of services to help you prepare your vehicle for consignment. This includes professional detailing and reconditioning, as well as assistance with obtaining any necessary repairs or maintenance. We want to make sure your vehicle is presented in the best possible condition, to maximize its value and appeal to buyers.`,
+    title: "We offer a full range of vehicle detailing and reconditioning services.",
+    text: `However, our commitment to excellence doesn't end with the sale. We also offer a range of services to help you prepare your vehicle for consignment. This includes professional detailing and reconditioning, as well as assistance with obtaining any necessary repairs or maintenance. Our primary objective is to ensure that your vehicle is presented in the best possible condition, thereby maximizing its value and appeal to prospective buyers.`,
   },
   {
     id: 4,
-    title: "Tiered pricing system",
-    text: `Another advantage of consigning with us is our competitive consignment fee structure. We offer a tiered pricing system based on the sale price of the vehicle, which means you only pay a percentage of the final sale price. This allows you to keep more of the profits from the sale of your vehicle.
-
-But our value proposition goes beyond just the financial aspect. We also pride ourselves on our exceptional customer service and transparent communication. Our team is dedicated to keeping you informed throughout the entire consignment process and answering any questions you may have. We want to make the process as seamless and stress-free as possible for you.`,
+    title: "The system uses tiered pricing.",
+    text: `Our consignment fee structure is unbeatable. Our tiered pricing system is straightforward: you pay a percentage of the final sale price. This allows you to keep more of the profits from the sale of your vehicle.
+Our value proposition is clear: we offer more than just financial benefits. We are committed to delivering exceptional customer service and transparent communication. Our team is dedicated to keeping you informed throughout the entire consignment process and answering any questions you may have. We will make the process seamless and stress-free for you.`,
   },
 ];
 
@@ -67,13 +66,11 @@ export default function ConsignPage() {
       <section className="py-20 max-w-5xl mx-auto text-center px-6">
         <h2 className="text-4xl font-bold">
           Welcome to our new{" "}
-          <span className="italic text-yellow-500">Consignment Page</span>
+          <span className="italic text-yellow-500">Consignment Page.</span>
         </h2>
 
         <p className="max-w-2xl mx-auto text-gray-600 mt-4">
-          Are you looking to sell your luxury vehicle? Look no further.
-          We are the largest luxury car dealership. We help you get the most
-          value out of your consignment.
+          Sell your vehicle now. Look no further. Our dealership is the best in the business. We will help you get the most value out of your consignment.
         </p>
 
         <div className="mt-12 w-full aspect-video rounded-xl overflow-hidden shadow-lg">
@@ -105,8 +102,8 @@ export default function ConsignPage() {
         <div>
           <h2 className="text-4xl font-bold leading-tight">
             Consigning your vehicle <br />
-            with us has{" "}
-            <span className="italic text-yellow-500">Many Benefits</span>
+            with us is the{" "}
+            <span className="italic text-yellow-500">Smart Move.</span>
           </h2>
 
           {/* Vertical line */}
@@ -169,14 +166,14 @@ export default function ConsignPage() {
 
           <div className="relative z-10 p-10">
             <h2 className="text-4xl font-bold text-white text-center">
-              Sell Your Vehicle on Your Terms:
+              Sell Your Car on Your Terms:
               <br />
-              Choose the Best Way to{" "}
-              <span className="italic text-yellow-400">Consign with Us</span>
+              Pick the best way to{" "}
+              <span className="italic text-yellow-400">consign with us.</span>
             </h2>
 
             <p className="text-gray-200 text-center max-w-2xl mx-auto mt-4">
-              Our team is ready to help you get the most out of your vehicle.
+              Our team is standing by, ready to help you get the most out of your consignment.<br />
               Contact us today to get started.
             </p>
 
@@ -188,7 +185,7 @@ export default function ConsignPage() {
       </section>
 
       {/* ======================= CONTACT SECTION ======================= */}
-      <section className="py-24 max-w-6xl mx-auto px-6">
+      {/*<section className="py-24 max-w-6xl mx-auto px-6">
         <h2 className="text-4xl text-center font-bold">
           Contact{" "}
           <span className="italic text-yellow-500 font-serif">with Us</span>
@@ -228,7 +225,7 @@ export default function ConsignPage() {
           </div>
         </div>
       </section>
-
+      */}
     </main>
   );
 }
