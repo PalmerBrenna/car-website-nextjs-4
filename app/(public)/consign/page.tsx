@@ -44,6 +44,7 @@ export default function ConsignPage() {
           src="/images/hero-consign.jpg"
           alt="Consign Hero"
           fill
+          sizes="100vw"
           className="object-cover"
           priority
         />
@@ -95,6 +96,7 @@ export default function ConsignPage() {
             src="/uploads/pages/benefit-car.webp"
             alt="Interior Car"
             fill
+            sizes="100vw"
             className="object-cover"
           />
         </div>
@@ -161,6 +163,7 @@ export default function ConsignPage() {
             src="/uploads/pages/consign-bottom.webp"
             alt="Car Interior"
             fill
+            sizes="100vw"
             className="object-cover opacity-40"
           />
 

@@ -79,6 +79,7 @@ export default function ContactPage() {
           src="/images/hero-contact.jpg" // 👉 pune aici imaginea ta (ex: assets/hero-contact.jpg)
           alt="Contact Dariella Motors"
           fill
+          sizes="100vw"
           priority
           className="object-cover"
         />

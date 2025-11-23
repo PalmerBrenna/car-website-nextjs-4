@@ -254,12 +254,13 @@ function SoldPage() {
       {/* HERO cover */}
       <section className="relative w-full h-[45vh] min-h-[420px]">
         <Image
-          src={content.heroImage}
-          alt="Explore Classic Listings"
-          fill
-          priority
-          className="object-cover object-center"
-        />
+  src={content.heroImage}
+  alt="Explore Classic Listings"
+  fill
+  priority
+  sizes="100vw"
+  className="object-cover object-center"
+/>
         {isEditing && (
           <input
             type="file"

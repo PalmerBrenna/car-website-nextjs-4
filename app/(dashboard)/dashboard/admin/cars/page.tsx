@@ -217,6 +217,7 @@ export default function AdminCarsPage() {
                   src={mainImage}
                   alt={title}
                   fill
+                  sizes="100vw"
                   className="object-cover"
                 />
               </div>

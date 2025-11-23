@@ -185,6 +185,7 @@ export default function AboutPage() {
               src={content.heroImage}
               alt="Hero"
               fill
+              sizes="100vw"
               className="object-cover"
             />
             {isEditing && (
@@ -206,6 +207,7 @@ export default function AboutPage() {
               src={content.section2Image}
               alt="About image"
               fill
+              sizes="100vw"
               className="object-cover"
             />
             {isEditing && (
@@ -295,6 +297,7 @@ export default function AboutPage() {
             src={member.image}
             alt={member.name}
             fill
+            sizes="100vw"
             className="object-cover"
           />
           {isEditing && (

@@ -130,6 +130,7 @@ export default function ShippingPage() {
           src={content.heroImage || "/images/placeholder-hero.jpg"}
           alt="Shipping Hero"
           fill
+          sizes="100vw"
           priority
           className="object-cover"
         />
@@ -227,6 +228,7 @@ export default function ShippingPage() {
     src={img.url}
     alt={img.caption || `Gallery image ${index + 1}`}
     fill
+    sizes="100vw"
     className="object-cover object-center"
   />
 </div>

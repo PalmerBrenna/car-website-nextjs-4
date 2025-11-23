@@ -269,6 +269,7 @@ function ListingsPage() {
           src={content.heroImage}
           alt="Explore Classic Listings"
           fill
+          sizes="100vw"
           priority
           className="object-cover"
         />

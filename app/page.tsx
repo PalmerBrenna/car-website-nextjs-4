@@ -74,6 +74,7 @@ function ListingCard({ car }: { car: Car }) {
           src={img}
           alt={typeof title === "string" ? title : "Car"}
           fill
+          sizes="100vw"
           className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
         {car.status && (
@@ -190,6 +191,7 @@ export default function HomePage() {
             src={content.heroImage}
             alt="Vintage American Classics"
             fill
+            sizes="100vw"
             priority
             className="object-cover"
           />

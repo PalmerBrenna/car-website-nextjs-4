@@ -180,6 +180,7 @@ export default function FinancePage() {
           src={content.heroImage || "/images/placeholder-hero.jpg"}
           alt="Finance Hero"
           fill
+          sizes="100vw"
           priority
           className="object-cover"
         />
@@ -316,6 +317,7 @@ export default function FinancePage() {
                     <Image
                       src={item.image || "/images/placeholder.jpg"}
                       alt={item.name || "Finance Partner"}
+                      sizes="100vw"
                       fill
                       className="object-cover object-center"
                     />
