@@ -90,12 +90,12 @@ export default function Navbar() {
             className="bg-transparent outline-none text-sm text-gray-700 px-2 flex-1"
           />
           <button
-  type="submit"
-  aria-label="Search"
-  className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition ml-1"
->
-  <Search size={16} />
-</button>
+            type="submit"
+            aria-label="Search"
+            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition ml-1"
+          >
+            <Search size={16} />
+          </button>
         </form>
 
         <div className="hidden md:flex items-center space-x-6 font-medium">
@@ -126,12 +126,12 @@ export default function Navbar() {
         </div>
 
         <button
-  onClick={() => setOpen(!open)}
-  aria-label={open ? "Close menu" : "Open menu"}
-  className="md:hidden text-gray-600 hover:text-blue-600"
->
-  {open ? <X size={28} /> : <Menu size={28} />}
-</button>
+          onClick={() => setOpen(!open)}
+          aria-label={open ? "Close menu" : "Open menu"}
+          className="md:hidden text-gray-600 hover:text-blue-600"
+        >
+          {open ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
 
       {open && (
