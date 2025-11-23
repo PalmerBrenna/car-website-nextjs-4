@@ -2,28 +2,42 @@ import type { MetadataRoute } from "next";
 import { getCars } from "@/lib/firestore";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const cars = await getCars();
+  const baseUrl = "https://dariellamotors.com";
 
-  const carUrls = cars.map((car: any) => ({
-    url: `https://dariellamotors.com/listings/${car.id}`,
+  // 🔵 Pagini statice din site
+  const staticPages = [
+    "/",               
+    "/listings",
+    "/sold",
+    "/finance",
+    "/consign",
+    "/shipping",
+    "/about",
+    "/contact",
+    "/auth/login",
+    "/dashboard/cars/new",
+  ];
+
+  const staticRoutes = staticPages.map((path) => ({
+    url: `${baseUrl}${path}`,
     lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.7,
+    changeFrequency: path === "/" ? "daily" : "weekly",
+    priority: path === "/" ? 1.0 : 0.8,
   }));
 
+  // 🔥 Pagini dinamice pentru /listings/:id
+  const cars = await getCars();
+
+  const listingRoutes = cars.map((car: any) => ({
+    url: `${baseUrl}/listings/${car.id}`,
+    lastModified: new Date(car.updatedAt || Date.now()),
+    changeFrequency: "weekly",
+    priority: 0.9,
+  }));
+
+  // 📦 Returnăm sitemap complet
   return [
-    {
-      url: "https://dariellamotors.com/",
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: "https://dariellamotors.com/listings",
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    ...carUrls,
+    ...staticRoutes,
+    ...listingRoutes,
   ];
 }
