@@ -1,4 +1,4 @@
-"use client";
+//"use client";
 //
 import "./globals.css";
 
@@ -10,6 +10,13 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next"
 
 export const dynamic = "force-static";
+
+
+export const metadata = {
+  title: "Dariella Motors — Classic Cars & Exclusive Listings",
+  description:
+    "Discover exclusive vintage and classic cars for sale. Verified listings, nationwide delivery, and premium services.",
+};
 
 export default function RootLayout({
   children,
