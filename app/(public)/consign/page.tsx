@@ -55,10 +55,11 @@ export default function ConsignPage() {
             CONSIGN WITH THE LARGEST <br />
             <span className="text-yellow-400 italic">LUXURY DEALERSHIP</span>
           </h1>
-
+{/*
           <div className="mt-10">
             <VehicleForm />
           </div>
+          */}
         </div>
       </section>
 
