@@ -23,115 +23,99 @@ export default function CarFilters({
   const [makes, setMakes] = useState<string[]>([]);
   const [models, setModels] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-const [carsData, setCarsData] = useState<any[]>([]);
+  const [carsData, setCarsData] = useState<any[]>([]);
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   /* 🔹 Extrage makes și models automat din Firestore */
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const cars = await getCars();
-      setCarsData(cars); // salvăm toate mașinile
+    const fetchData = async () => {
+      try {
+        const cars = await getCars();
+        setCarsData(cars); // salvăm toate mașinile
 
-      const allMakes = new Set<string>();
+        const allMakes = new Set<string>();
+        const allModels = new Set<string>();
+
+        cars.forEach((car: any) => {
+          const make = car.make || car.schemaData?.Details?.Make || undefined;
+
+          const model =
+            car.model || car.schemaData?.Details?.Model || undefined;
+
+          if (make && typeof make === "string" && make.trim() !== "")
+            allMakes.add(make.trim());
+
+          if (model && typeof model === "string" && model.trim() !== "")
+            allModels.add(model.trim());
+        });
+
+        setMakes(Array.from(allMakes).sort());
+        setModels(Array.from(allModels).sort());
+      } catch (err) {
+        console.error("❌ Eroare la încărcarea filtrelor:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!filters.make) {
+      // dacă nu e selectată nicio marcă, afișăm toate modelele
       const allModels = new Set<string>();
-
-      cars.forEach((car: any) => {
-  const make =
-    car.make ||
-    car.schemaData?.Details?.Make ||
-    undefined;
-
-  const model =
-    car.model ||
-    car.schemaData?.Details?.Model ||
-    undefined;
-
-  if (make && typeof make === "string" && make.trim() !== "")
-    allMakes.add(make.trim());
-
-  if (model && typeof model === "string" && model.trim() !== "")
-    allModels.add(model.trim());
-});
-
-
-      setMakes(Array.from(allMakes).sort());
+      carsData.forEach((car) => {
+        const model =
+          car.model ||
+          car.schemaData?.General?.Model ||
+          car.schemaData?.Detalii?.Model ||
+          car.schemaData?.["Specificații"]?.Model ||
+          undefined;
+        if (model && typeof model === "string" && model.trim() !== "")
+          allModels.add(model.trim());
+      });
       setModels(Array.from(allModels).sort());
-    } catch (err) {
-      console.error("❌ Eroare la încărcarea filtrelor:", err);
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
-  fetchData();
-}, []);
 
-useEffect(() => {
-  if (!filters.make) {
-    // dacă nu e selectată nicio marcă, afișăm toate modelele
-    const allModels = new Set<string>();
+    // altfel, filtrăm doar modelele care au marca selectată
+    const filteredModels = new Set<string>();
+
     carsData.forEach((car) => {
-      const model =
-        car.model ||
-        car.schemaData?.General?.Model ||
-        car.schemaData?.Detalii?.Model ||
-        car.schemaData?.["Specificații"]?.Model ||
-        undefined;
-      if (model && typeof model === "string" && model.trim() !== "")
-        allModels.add(model.trim());
+      const make = car.make || car.schemaData?.Details?.Make || undefined;
+
+      const model = car.model || car.schemaData?.Details?.Model || undefined;
+
+      if (
+        make &&
+        model &&
+        typeof make === "string" &&
+        typeof model === "string" &&
+        make.trim().toLowerCase() === filters.make.trim().toLowerCase()
+      ) {
+        filteredModels.add(model.trim());
+      }
     });
-    setModels(Array.from(allModels).sort());
-    return;
-  }
 
-  // altfel, filtrăm doar modelele care au marca selectată
-  const filteredModels = new Set<string>();
-
-carsData.forEach((car) => {
-  const make =
-    car.make ||
-    car.schemaData?.Details?.Make ||
-    undefined;
-
-  const model =
-    car.model ||
-    car.schemaData?.Details?.Model ||
-    undefined;
-
-  if (
-    make &&
-    model &&
-    typeof make === "string" &&
-    typeof model === "string" &&
-    make.trim().toLowerCase() === filters.make.trim().toLowerCase()
-  ) {
-    filteredModels.add(model.trim());
-  }
-});
-
-setModels(Array.from(filteredModels).sort());
-
-}, [filters.make, carsData]);
-
-
+    setModels(Array.from(filteredModels).sort());
+  }, [filters.make, carsData]);
 
   /* 🔹 Actualizare filtre */
   const handleChange = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-) => {
-  const { name, value } = e.target;
-  let updated = { ...filters, [name]: value };
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    let updated = { ...filters, [name]: value };
 
-  // 🔹 Dacă se schimbă marca, resetăm modelul
-  if (name === "make") {
-    updated = { ...updated, model: "" };
-  }
+    // 🔹 Dacă se schimbă marca, resetăm modelul
+    if (name === "make") {
+      updated = { ...updated, model: "" };
+    }
 
-  setFilters(updated);
-  onFilter(updated);
-};
-
+    setFilters(updated);
+    onFilter(updated);
+  };
 
   const handleDropdown = (name: string) => {
     setOpenDropdown((prev) => (prev === name ? null : name));
@@ -142,8 +126,6 @@ setModels(Array.from(filteredModels).sort());
     onFilter(filters);
   };
 
-  
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -151,9 +133,6 @@ setModels(Array.from(filteredModels).sort());
     >
       {/* 🔍 Search - acum e în stânga */}
       <div className="flex items-center bg-gray-800 rounded-full overflow-hidden px-3 w-full md:w-auto min-w-[300px] order-first ">
-        
-        
-
         <input
           type="text"
           name="query"
@@ -164,6 +143,7 @@ setModels(Array.from(filteredModels).sort());
         />
         <button
           type="submit"
+          aria-label="Search"
           className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition"
         >
           <Search className="h-4 w-4" />
@@ -189,7 +169,12 @@ setModels(Array.from(filteredModels).sort());
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -251,7 +236,12 @@ setModels(Array.from(filteredModels).sort());
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -305,7 +295,12 @@ setModels(Array.from(filteredModels).sort());
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -359,7 +354,12 @@ setModels(Array.from(filteredModels).sort());
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -405,7 +405,12 @@ setModels(Array.from(filteredModels).sort());
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
