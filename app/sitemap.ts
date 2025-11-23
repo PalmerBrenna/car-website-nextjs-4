@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getCars } from "@/lib/firestore";
 
+export const dynamic = "force-dynamic";  // ⬅⬅⬅ ADĂUGAT
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://dariellamotors.com";
 
-  // 🔵 Pagini statice din site
   const staticPages = [
     "/",               
     "/listings",
@@ -25,7 +26,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: path === "/" ? 1.0 : 0.8,
   }));
 
-  // 🔥 Pagini dinamice pentru /listings/:id
   const cars = await getCars();
 
   const listingRoutes = cars.map((car: any) => ({
@@ -35,9 +35,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  // 📦 Returnăm sitemap complet
-  return [
-    ...staticRoutes,
-    ...listingRoutes,
-  ];
+  return [...staticRoutes, ...listingRoutes];
 }
