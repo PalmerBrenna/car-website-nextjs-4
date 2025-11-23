@@ -38,7 +38,7 @@ export default function ConsignPage() {
     <main className="w-full bg-white text-gray-900">
 
       {/* ======================= HERO ======================= */}
-      <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center">
+      <section className="relative h-[54vh] min-h-[420px] w-full flex items-center justify-center">
         <Image
           src="/images/hero-consign.jpg"
           alt="Consign Hero"
@@ -52,8 +52,8 @@ export default function ConsignPage() {
 
         <div className="relative z-10 max-w-4xl mx-auto text-center px-6">
           <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-            CONSIGN WITH THE LARGEST <br />
-            <span className="text-yellow-400 italic">LUXURY DEALERSHIP</span>
+            CONSIGN WITH THE HIGH-QUALITY  <br />
+            <span className="text-yellow-400 italic">DEALERSHIP</span>
           </h1>
 {/*
           <div className="mt-10">
@@ -73,7 +73,7 @@ export default function ConsignPage() {
         <p className="max-w-2xl mx-auto text-gray-600 mt-4">
           Sell your vehicle now. Look no further. Our dealership is the best in the business. We will help you get the most value out of your consignment.
         </p>
-
+{/*
         <div className="mt-12 w-full aspect-video rounded-xl overflow-hidden shadow-lg">
           <iframe
             className="w-full h-full"
@@ -83,6 +83,7 @@ export default function ConsignPage() {
             allowFullScreen
           ></iframe>
         </div>
+        */}
       </section>
 
       {/* ======================= BENEFITS ======================= */}
