@@ -20,7 +20,8 @@ const benefits = [
   },
   {
     id: 3,
-    title: "We offer a full range of vehicle detailing and reconditioning services.",
+    title:
+      "We offer a full range of vehicle detailing and reconditioning services.",
     text: `However, our commitment to excellence doesn't end with the sale. We also offer a range of services to help you prepare your vehicle for consignment. This includes professional detailing and reconditioning, as well as assistance with obtaining any necessary repairs or maintenance. Our primary objective is to ensure that your vehicle is presented in the best possible condition, thereby maximizing its value and appeal to prospective buyers.`,
   },
   {
@@ -36,7 +37,6 @@ export default function ConsignPage() {
 
   return (
     <main className="w-full bg-white text-gray-900">
-
       {/* ======================= HERO ======================= */}
       <section className="relative h-[54vh] min-h-[420px] w-full flex items-center justify-center">
         <Image
@@ -48,14 +48,15 @@ export default function ConsignPage() {
           priority
         />
 
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent"></div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center px-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-            CONSIGN WITH THE HIGH-QUALITY  <br />
+          <h1 className="text-4xl md:text-5xl  font-bold text-white leading-tight">
+            CONSIGN WITH THE HIGH-QUALITY <br />
             <span className="text-yellow-400 italic">DEALERSHIP</span>
           </h1>
-{/*
+          {/*
           <div className="mt-10">
             <VehicleForm />
           </div>
@@ -71,9 +72,11 @@ export default function ConsignPage() {
         </h2>
 
         <p className="max-w-2xl mx-auto text-gray-600 mt-4">
-          Sell your vehicle now. Look no further. Our dealership is the best in the business. We will help you get the most value out of your consignment.
+          Sell your vehicle now. Look no further. Our dealership is the best in
+          the business. We will help you get the most value out of your
+          consignment.
         </p>
-{/*
+        {/*
         <div className="mt-12 w-full aspect-video rounded-xl overflow-hidden shadow-lg">
           <iframe
             className="w-full h-full"
@@ -88,7 +91,6 @@ export default function ConsignPage() {
 
       {/* ======================= BENEFITS ======================= */}
       <section className="py-24 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12">
-
         {/* IMAGE */}
         <div className="relative w-full h-[480px] rounded-3xl overflow-hidden shadow-lg">
           <Image
@@ -175,7 +177,9 @@ export default function ConsignPage() {
             </h2>
 
             <p className="text-gray-200 text-center max-w-2xl mx-auto mt-4">
-              Our team is standing by, ready to help you get the most out of your consignment.<br />
+              Our team is standing by, ready to help you get the most out of
+              your consignment.
+              <br />
               Contact us today to get started.
             </p>
 
