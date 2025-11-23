@@ -142,12 +142,13 @@ export default function CarFilters({
           className="flex-1 bg-transparent outline-none py-2 px-2 text-sm text-white placeholder-gray-400"
         />
         <button
-          type="submit"
-          aria-label="Search"
-          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition"
-        >
-          <Search className="h-4 w-4" />
-        </button>
+  type="submit"
+  aria-label="Search"
+  className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition"
+>
+  <span className="sr-only">Search</span>
+  <Search className="h-4 w-4" />
+</button>
       </div>
 
       {/* Year Range */}
