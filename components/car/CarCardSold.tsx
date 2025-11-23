@@ -91,11 +91,12 @@ export default function CarCardSold({ car }: Props) {
     {/* IMAGE (non-clickable) */}
     <div className="relative w-full h-56 md:h-55 overflow-hidden cursor-default">
       <Image
-        src={mainImage}
-        alt={title}
-        fill
-        className="object-cover transition-transform duration-500"
-      />
+  src={mainImage}
+  alt={title}
+  fill
+  sizes="(max-width: 768px) 100vw, 33vw"
+  className="object-cover transition-transform duration-500"
+/>
 
       {/* DIAGONAL SOLD OVERLAY */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center">

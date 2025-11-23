@@ -94,13 +94,14 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
       {/* 🔹 Imagine principală: prima din Exterior deoarece Exterior e primul în categories */}
       <div className="lg:col-span-4 relative bg-gray-100 rounded-lg overflow-hidden">
         <Image
-          src={allImages[0]?.src || "/images/placeholder-car.jpg"}
-          alt="Main Image"
-          fill
-          className="object-cover cursor-pointer"
-          onClick={() => openLightbox(0)}
-          priority
-        />
+  src={allImages[0]?.src || "/images/placeholder-car.jpg"}
+  alt="Main Image"
+  fill
+  sizes="100vw"
+  className="object-cover cursor-pointer"
+  onClick={() => openLightbox(0)}
+  priority
+/>
         <span className="absolute top-3 left-3 bg-gray-900/70 text-white text-xs px-2 py-1 rounded">
           FEATURED ({allImages[0]?.category || "N/A"})
         </span>
@@ -115,11 +116,12 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
             onClick={() => openLightbox(i + 1, img.category)}
           >
             <Image
-              src={img.src}
-              alt={`Thumbnail ${i}`}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform"
-            />
+  src={img.src}
+  alt={`Thumbnail ${i}`}
+  fill
+  sizes="200px"
+  className="object-cover group-hover:scale-105 transition-transform"
+/>
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition"></div>
 
             {i === 0 && (
