@@ -17,15 +17,20 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["firebase"],
 
   images: {
-    // ✅ Permite imagini din orice sursă externă (ex: Firebase Storage, CDN)
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-    ],
-    formats: ["image/webp", "image/avif"],
-  },
+  formats: ["image/webp", "image/avif"],
+  remotePatterns: [
+    {
+      protocol: "https",
+      hostname: "firebasestorage.googleapis.com",
+      pathname: "/v0/b/**",
+    },
+    {
+      protocol: "https",
+      hostname: "storage.googleapis.com",
+      pathname: "/**",
+    },
+  ],
+},
 
   // ✅ Evită prerender SSR pentru pagini care folosesc doar client-side Firebase
   output: "standalone",

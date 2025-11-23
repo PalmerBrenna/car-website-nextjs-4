@@ -9,8 +9,8 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // 🔹 1. CATEGORII SORTATE STABIL (Exterior primul) 
- /* const categories = useMemo(() => {
+  // 🔹 1. CATEGORII SORTATE STABIL (Exterior primul)
+  /* const categories = useMemo(() => {
     if (!schemaData) return [];
 
     const keys = Object.keys(schemaData).filter(
@@ -24,42 +24,41 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
         .sort((a, b) => a.localeCompare(b)),
     ];
   }, [schemaData]);*/
- // 1. Categorii sortate stabil ext primul 
+  // 1. Categorii sortate stabil ext primul
   const categories = useMemo(() => {
-  if (!schemaData) return [];
+    if (!schemaData) return [];
 
-  // extrage secțiunile care chiar au imagini
-  const keys = Object.keys(schemaData).filter(
-    (key) => schemaData[key]?.images?.length > 0
-  );
+    // extrage secțiunile care chiar au imagini
+    const keys = Object.keys(schemaData).filter(
+      (key) => schemaData[key]?.images?.length > 0
+    );
 
-  // normalizare la lowercase pentru comparație
-  const lower = keys.map((k) => k.toLowerCase());
+    // normalizare la lowercase pentru comparație
+    const lower = keys.map((k) => k.toLowerCase());
 
-  // ordinea preferată
-  const preferred = [
-    "exterior",
-    "interior",
-    "engine",
-    "documents",
-    "others",
-    "other images",
-  ];
+    // ordinea preferată
+    const preferred = [
+      "exterior",
+      "interior",
+      "engine",
+      "documents",
+      "others",
+      "other images",
+    ];
 
-  // 1️⃣ Secțiuni în ordinea preferată (dacă există)
-  const orderedPreferred = preferred
-    .map((name) => keys.find((k) => k.toLowerCase() === name))
-    .filter(Boolean);
+    // 1️⃣ Secțiuni în ordinea preferată (dacă există)
+    const orderedPreferred = preferred
+      .map((name) => keys.find((k) => k.toLowerCase() === name))
+      .filter(Boolean);
 
-  // 2️⃣ Restul secțiunilor care nu sunt în preferred
-  const remaining = keys
-    .filter((k) => !preferred.includes(k.toLowerCase()))
-    .sort((a, b) => a.localeCompare(b));
+    // 2️⃣ Restul secțiunilor care nu sunt în preferred
+    const remaining = keys
+      .filter((k) => !preferred.includes(k.toLowerCase()))
+      .sort((a, b) => a.localeCompare(b));
 
-  // ORDINEA FINALĂ
-  return [...orderedPreferred, ...remaining];
-}, [schemaData]);
-
+    // ORDINEA FINALĂ
+    return [...orderedPreferred, ...remaining];
+  }, [schemaData]);
 
   // 🔹 2. SORTARE STABILĂ PENTRU IMAGINI
   const sortImages = (images: any[]) =>
@@ -70,7 +69,7 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
       })
     );
 
-  // 🔹 3. COMBINĂM IMAGINILE ÎN ORDINE DETERMINISTĂ  
+  // 🔹 3. COMBINĂM IMAGINILE ÎN ORDINE DETERMINISTĂ
   const allImages = useMemo(() => {
     if (!schemaData) return [];
 
@@ -90,18 +89,17 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 w-full mb-8">
-      
       {/* 🔹 Imagine principală: prima din Exterior deoarece Exterior e primul în categories */}
       <div className="lg:col-span-4 relative bg-gray-100 rounded-lg overflow-hidden">
         <Image
-  src={allImages[0]?.src || "/images/placeholder-car.jpg"}
-  alt="Main Image"
-  fill
-  sizes="100vw"
-  className="object-cover cursor-pointer"
-  onClick={() => openLightbox(0)}
-  priority
-/>
+          src={allImages[0]?.src || "/images/placeholder-car.jpg"}
+          alt="Main Image"
+          fill
+          sizes="100vw"
+          className="object-cover cursor-pointer"
+          onClick={() => openLightbox(0)}
+          priority
+        />
         <span className="absolute top-3 left-3 bg-gray-900/70 text-white text-xs px-2 py-1 rounded">
           FEATURED ({allImages[0]?.category || "N/A"})
         </span>
@@ -116,12 +114,12 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
             onClick={() => openLightbox(i + 1, img.category)}
           >
             <Image
-  src={img.src}
-  alt={`Thumbnail ${i}`}
-  fill
-  sizes="200px"
-  className="object-cover group-hover:scale-105 transition-transform"
-/>
+              src={img.src}
+              alt={`Thumbnail ${i}`}
+              fill
+              sizes="200px"
+              className="object-cover group-hover:scale-105 transition-transform"
+            />
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition"></div>
 
             {i === 0 && (

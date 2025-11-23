@@ -115,14 +115,14 @@ export default function CarCard({ car }: Props) {
         className="block relative w-full h-56 md:h-55 overflow-hidden"
       >
         <Image
-  src={mainImage}
-  alt={title}
-  fill
-  sizes="(max-width: 768px) 100vw,
+          src={mainImage}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 100vw,
          (max-width: 1024px) 50vw,
          33vw"
-  className="object-cover transition-transform duration-500 group-hover:scale-105"
-/>
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
 
         {/* 🔹 Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-70 group-hover:opacity-90 transition"></div>
@@ -159,7 +159,7 @@ export default function CarCard({ car }: Props) {
 
         {/* Locație + buton */}
         <div className="flex justify-between items-center">
-         {/*  {location ? (
+          {/*  {location ? (
             <span className="text-sm text-gray-500 truncate">📍 {location}</span>
           ) : (
             <span className="text-sm text-gray-400">—</span>
@@ -169,7 +169,7 @@ export default function CarCard({ car }: Props) {
             href={`/listings/${car.id}`}
             className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
           >
-          {/*  View details →*/}
+            {/*  View details →*/}
           </Link>
         </div>
       </div>

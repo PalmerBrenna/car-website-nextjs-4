@@ -96,7 +96,10 @@ export default function ShippingPage() {
     if (!file) return null;
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch("/api/upload-page", { method: "POST", body: formData });
+    const res = await fetch("/api/upload-page", {
+      method: "POST",
+      body: formData,
+    });
     const data = await res.json();
     return data.url || null;
   };
@@ -146,7 +149,9 @@ export default function ShippingPage() {
               />
               <input
                 value={content.title}
-                onChange={(e) => setContent({ ...content, title: e.target.value })}
+                onChange={(e) =>
+                  setContent({ ...content, title: e.target.value })
+                }
                 className="text-4xl md:text-5xl font-bold text-center border-b border-blue-400 focus:outline-none bg-transparent text-white w-full"
               />
             </>
@@ -160,26 +165,24 @@ export default function ShippingPage() {
 
       {/* 📜 Description */}
       <div className="max-w-5xl mx-auto px-6 py-16 text-center space-y-6">
-        {isEditing ? (
-          content.description.map((para, i) => (
-            <textarea
-              key={i}
-              value={para}
-              onChange={(e) => {
-                const updated = [...content.description];
-                updated[i] = e.target.value;
-                setContent({ ...content, description: updated });
-              }}
-              className="w-full border border-gray-300 rounded-lg p-3 text-gray-700"
-            />
-          ))
-        ) : (
-          content.description.map((para, i) => (
-            <p key={i} className="text-gray-600 text-lg leading-relaxed">
-              {para}
-            </p>
-          ))
-        )}
+        {isEditing
+          ? content.description.map((para, i) => (
+              <textarea
+                key={i}
+                value={para}
+                onChange={(e) => {
+                  const updated = [...content.description];
+                  updated[i] = e.target.value;
+                  setContent({ ...content, description: updated });
+                }}
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-700"
+              />
+            ))
+          : content.description.map((para, i) => (
+              <p key={i} className="text-gray-600 text-lg leading-relaxed">
+                {para}
+              </p>
+            ))}
       </div>
 
       {/* 🚚 Highlights Section */}
@@ -191,7 +194,13 @@ export default function ShippingPage() {
               className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md p-6 flex flex-col items-center"
             >
               <div className="text-blue-600 mb-3">
-                {i === 0 ? <Truck size={30} /> : i === 1 ? <ShieldCheck size={30} /> : <Clock3 size={30} />}
+                {i === 0 ? (
+                  <Truck size={30} />
+                ) : i === 1 ? (
+                  <ShieldCheck size={30} />
+                ) : (
+                  <Clock3 size={30} />
+                )}
               </div>
               {isEditing ? (
                 <textarea
@@ -224,14 +233,14 @@ export default function ShippingPage() {
               className="relative bg-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition"
             >
               <div className="aspect-[4/3] relative w-full rounded-xl overflow-hidden shadow-sm hover:shadow-md transition">
-  <Image
-    src={img.url}
-    alt={img.caption || `Gallery image ${index + 1}`}
-    fill
-    sizes="100vw"
-    className="object-cover object-center"
-  />
-</div>
+                <Image
+                  src={img.url}
+                  alt={img.caption || `Gallery image ${index + 1}`}
+                  fill
+                  sizes="100vw"
+                  className="object-cover object-center"
+                />
+              </div>
 
               {isEditing && (
                 <>

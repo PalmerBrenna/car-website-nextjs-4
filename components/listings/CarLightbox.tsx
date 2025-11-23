@@ -64,7 +64,6 @@ export default function CarLightbox({
 
       {/* 🔹 Large image area */}
       <div className="flex-1 flex items-center justify-center relative px-4 sm:px-8">
-
         {/* Prev */}
         <button
           onClick={prev}
@@ -77,13 +76,13 @@ export default function CarLightbox({
         {current ? (
           <div className="relative w-full max-w-[1800px] h-[90vh] flex items-center justify-center">
             <Image
-  src={current.src}
-  alt={current.alt || ""}
-  fill
-  sizes="100vw"
-  className="object-contain select-none pointer-events-none rounded-lg transition-transform duration-300 hover:scale-[1.02]"
-  priority={false}
-/>
+              src={current.src}
+              alt={current.alt || ""}
+              fill
+              sizes="100vw"
+              className="object-contain select-none pointer-events-none rounded-lg transition-transform duration-300 hover:scale-[1.02]"
+              priority={false}
+            />
           </div>
         ) : (
           <p className="text-gray-400">No image available</p>
