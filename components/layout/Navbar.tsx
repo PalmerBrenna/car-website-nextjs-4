@@ -40,7 +40,7 @@ export default function Navbar() {
     { href: "/", label: "Home" },
     { href: "/listings", label: "Find Your Car" },
     { href: "/sold", label: "Sold" },
-    { href: "/finance", label: "Finance" },
+    
     { href: "/consign", label: "Consignment" },
     { href: "/shipping", label: "Shipping" },
     { href: "/about", label: "About" },

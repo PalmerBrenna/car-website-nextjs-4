@@ -122,7 +122,7 @@ export default function HomePage() {
       "",
     heroImage: "/images/hero-vintage.jpg",
     cta1: "Browse All Listings",
-    cta2: "Talk to Us",
+    cta2: "Consign Now",
     bannerTitle: "Got a car to sell or consign?",
     bannerText: "We make it easy—photography, paperwork, nationwide buyers.",
   });
@@ -256,7 +256,7 @@ export default function HomePage() {
     {content.cta1}
   </Link>
   <Link
-    href="/contact"
+    href="/consign"
     className="rounded-full border border-gray-300 px-5 py-2.5 font-semibold text-gray-800 hover:border-blue-500 hover:text-blue-600 transition"
   >
     {content.cta2}
