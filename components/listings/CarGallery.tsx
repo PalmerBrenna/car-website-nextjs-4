@@ -73,13 +73,21 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
   const allImages = useMemo(() => {
     if (!schemaData) return [];
 
+    const sortImages = (arr: any[]) =>
+      [...arr].sort((a, b) =>
+        (a.name || "").localeCompare(b.name || "", undefined, {
+          numeric: true,
+          sensitivity: "base",
+        })
+      );
+
     return categories.flatMap((cat) =>
       sortImages(schemaData[cat].images).map((img: any) => ({
         ...img,
         category: cat,
       }))
     );
-  }, [schemaData, categories]);
+  }, [categories]);
 
   const openLightbox = (index: number, category = "All") => {
     setActiveCategory(category);

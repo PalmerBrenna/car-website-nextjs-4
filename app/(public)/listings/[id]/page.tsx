@@ -268,14 +268,14 @@ export default function CarDetailsPage() {
         const videoId = videoIdMatch ? videoIdMatch[1] : null;
 
         // 🧩 DEBUG: vezi exact ce link e procesat și ce ID s-a extras
-        console.log(
+       /* console.log(
           "%c🎬 YouTube debug",
           "background: #222; color: #4af; font-weight: bold; padding: 2px 6px; border-radius: 4px;",
           "\nURL:",
           cleanUrl,
           "\nVideo ID:",
           videoId
-        );
+        );*/
 
         if (!videoId) {
           console.warn("⚠️ Nu s-a putut extrage ID YouTube din:", url);
@@ -317,48 +317,48 @@ export default function CarDetailsPage() {
     return (
       <>
         {finalSections.map((section) => {
-      const data = schemaData[section];
-      if (!data) return null;
+          const data = schemaData[section];
+          if (!data) return null;
 
-      // 🧽 Curățăm array-urile (eliminăm golurile, spațiile, punctele, newline-urile)
-let cleanedArray = null;
-if (Array.isArray(data)) {
-  cleanedArray = data
-    .map(item => (typeof item === "string" ? item.trim() : item))
-    .filter(
-      item =>
-        item &&
-        typeof item === "string" &&
-        item.length > 1 &&
-        item !== "." &&
-        item !== "·"
-    );
-}
+          // 🧽 Curățăm array-urile (eliminăm golurile, spațiile, punctele, newline-urile)
+          let cleanedArray = null;
+          if (Array.isArray(data)) {
+            cleanedArray = data
+              .map((item) => (typeof item === "string" ? item.trim() : item))
+              .filter(
+                (item) =>
+                  item &&
+                  typeof item === "string" &&
+                  item.length > 1 &&
+                  item !== "." &&
+                  item !== "·"
+              );
+          }
 
-      // 🛑 Ascunde secțiunile complet goale (obiecte)
-      if (
-        typeof data === "object" &&
-        !Array.isArray(data) &&
-        Object.values(data).every(
-          (v) => v === null || v === "" || v === undefined
-        )
-      ) {
-        return null;
-      }
+          // 🛑 Ascunde secțiunile complet goale (obiecte)
+          if (
+            typeof data === "object" &&
+            !Array.isArray(data) &&
+            Object.values(data).every(
+              (v) => v === null || v === "" || v === undefined
+            )
+          ) {
+            return null;
+          }
 
-      // 🛑 Ascunde Highlights dacă e gol chiar și după curățare
-      if (
-        section.toLowerCase() === "highlights" &&
-        Array.isArray(data) &&
-        cleanedArray.length === 0
-      ) {
-        return null;
-      }
+          // 🛑 Ascunde Highlights dacă e gol chiar și după curățare
+          if (
+            section.toLowerCase() === "highlights" &&
+            Array.isArray(data) &&
+            cleanedArray.length === 0
+          ) {
+            return null;
+          }
 
-      const isArray = Array.isArray(data);
-      const isObject = typeof data === "object" && !isArray;
-      const skipFields = ["tempId", "createdAt", "updatedAt"];
-      if (skipFields.includes(section)) return null;
+          const isArray = Array.isArray(data);
+          const isObject = typeof data === "object" && !isArray;
+          const skipFields = ["tempId", "createdAt", "updatedAt"];
+          if (skipFields.includes(section)) return null;
 
           return (
             <section
@@ -375,36 +375,59 @@ if (Array.isArray(data)) {
               )}
 
               {/* 🔹 Liste simple */}
-              {isArray && (
-                <ul
-                  className={`grid gap-x-8 gap-y-2 text-gray-800 text-[15px] leading-relaxed
+{isArray && (
+  <ul
+    className={`
+      grid gap-y-3 text-gray-800 text-[15px] leading-relaxed
       ${
-        section.toLowerCase() === "equipment"
+        ["highlights", "modifications"].includes(section.toLowerCase())
+          ? "grid-cols-1"      // ⚡ Highlights + Modifications → UN RAND
+          : section.toLowerCase() === "equipment"
           ? "sm:grid-cols-3"
-          : section.toLowerCase() === "highlights"
-          ? "grid-cols-1" // 👉 Highlights = 1 coloană
           : "sm:grid-cols-2"
       }
     `}
-                >
-                  {data.length > 0 ? (
-                    cleanedArray.map((item: string, i: number) =>
-                      isYouTubeLink(item) ? (
-                        <li key={i} className="col-span-3">
-                          {renderYouTubeEmbed(item)}
-                        </li>
-                      ) : (
-                        <li key={i} className="flex items-start gap-2">
-                         <span className="mt-1 text-blue-600 text-lg leading-none">•</span>
-                          <span className="text-[15px]">{item}</span>
-                        </li>
-                      )
-                    )
-                  ) : (
-                    <li className="text-gray-400 italic">No data available</li>
-                  )}
-                </ul>
-              )}
+  >
+    {cleanedArray.length > 0 ? (
+      cleanedArray.map((item: string, i: number) => {
+        const trimmed = item.trim();
+
+        // ✔ Titluri speciale fără bullet
+        const isTitle =
+          ["Mechanical:", "Exterior:", "Interior:", "Other:"].includes(trimmed);
+
+        // ✔ YouTube → full width
+        if (isYouTubeLink(item)) {
+          return (
+            <li key={i} className="col-span-full">
+              {renderYouTubeEmbed(item)}
+            </li>
+          );
+        }
+
+        return (
+          <li key={i} className="flex items-start gap-2">
+            {/* ❌ NU afișa bullet pentru titluri */}
+            {!isTitle && (
+              <span className="mt-1 text-blue-600 text-lg leading-none">•</span>
+            )}
+            
+            {/* ✔ Titlurile sunt îngroșate */}
+            <span
+              className={`text-[15px] ${
+                isTitle ? "font-semibold uppercase text-gray-900" : ""
+              }`}
+            >
+              {item}
+            </span>
+          </li>
+        );
+      })
+    ) : (
+      <li className="text-gray-400 italic">No data available</li>
+    )}
+  </ul>
+)}
 
               {/* 🔹 Obiecte structurate */}
               {isObject && (

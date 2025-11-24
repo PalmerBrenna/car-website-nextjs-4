@@ -1,6 +1,6 @@
 "use client";
+import { useEffect } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
 
 export default function CarLightbox({
   images,
@@ -17,6 +17,23 @@ export default function CarLightbox({
       : images.filter((img: any) => img.category === activeCategory);
 
   const current = filtered[activeIndex];
+
+  /* ✅ PRELOAD NEXT 3 IMAGES */
+  useEffect(() => {
+    if (!filtered || filtered.length === 0) return;
+
+    const preloadCount = 3;
+
+    for (let i = 1; i <= preloadCount; i++) {
+      const nextIndex = (activeIndex + i) % filtered.length;
+      const nextSrc = filtered[nextIndex]?.src;
+
+      if (nextSrc) {
+        const img = new window.Image();
+        img.src = nextSrc; // cache preloading
+      }
+    }
+  }, [activeIndex, filtered]);
 
   const next = () =>
     setActiveIndex((prev: number) =>
@@ -75,13 +92,11 @@ export default function CarLightbox({
         {/* Image */}
         {current ? (
           <div className="relative w-full max-w-[1800px] h-[90vh] flex items-center justify-center">
-            <Image
+            <img
               src={current.src}
               alt={current.alt || ""}
-              fill
-              sizes="100vw"
-              className="object-contain select-none pointer-events-none rounded-lg transition-transform duration-300 hover:scale-[1.02]"
-              priority={false}
+              className="object-contain max-h-[90vh] max-w-full rounded-lg select-none pointer-events-none"
+              loading="lazy"
             />
           </div>
         ) : (
