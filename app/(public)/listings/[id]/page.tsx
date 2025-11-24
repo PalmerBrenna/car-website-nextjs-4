@@ -108,448 +108,476 @@ export default function CarDetailsPage() {
   const statusName = statusData?.name || car.status || "Unknown";
 
   return (
-  <div className="max-w-[1600px] mx-auto p-6">
+    <div className="max-w-[1600px] mx-auto p-6">
+      {/* TITLE + INFO + CARFAX în dreapta */}
+      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+        {/* LEFT — Title + Info */}
+        <div>
+          <h1 className="text-3xl font-bold">{title}</h1>
+          <p className="text-gray-600 mt-1">
+            {year || "N/A"} • {mileage ? `${formatNumber(mileage)} miles` : "—"}{" "}
+            • {stock ? `Stock: ${stock}` : "—"}
+          </p>
+        </div>
 
-    {/* TITLE + INFO + CARFAX în dreapta */}
-<div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+        {/* RIGHT — CARFAX LOGO (aliniat cu textul, nu cu partea de sus) */}
+        {(() => {
+          let pdfFile = null;
 
-  {/* LEFT — Title + Info */}
-  <div>
-    <h1 className="text-3xl font-bold">{title}</h1>
-    <p className="text-gray-600 mt-1">
-      {year || "N/A"} •{" "}
-      {mileage ? `${formatNumber(mileage)} miles` : "—"} •{" "}
-      {stock ? `Stock: ${stock}` : "—"}
-    </p>
-  </div>
+          const files = car.schemaData["Files"]?.files;
+          if (Array.isArray(files) && files[0]?.src) pdfFile = files[0].src;
 
-  {/* RIGHT — CARFAX LOGO (aliniat cu textul, nu cu partea de sus) */}
-  {(() => {
-    let pdfFile = null;
+          const pdf = car.schemaData["PDF"]?.files;
+          if (!pdfFile && Array.isArray(pdf) && pdf[0]?.src)
+            pdfFile = pdf[0].src;
 
-    const files = car.schemaData["Files"]?.files;
-    if (Array.isArray(files) && files[0]?.src) pdfFile = files[0].src;
+          if (!pdfFile) return null;
 
-    const pdf = car.schemaData["PDF"]?.files;
-    if (!pdfFile && Array.isArray(pdf) && pdf[0]?.src) pdfFile = pdf[0].src;
+          return (
+            <a
+              href={pdfFile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 md:mt-0 md:ml-4"
+            >
+              <img
+                src="/images/carfax-logo.jpg"
+                alt="CarFax Report"
+                className="w-28 md:w-32 hover:opacity-80 transition"
+              />
+            </a>
+          );
+        })()}
+      </div>
 
-    if (!pdfFile) return null;
+      {/* 🖼️ GALLERY */}
+      <div className="mb-6">
+        <CarGallery schemaData={car.schemaData} />
+      </div>
 
-    return (
-      <a
-        href={pdfFile}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 md:mt-0 md:ml-4"
-      >
-        <img
-          src="/images/carfax-logo.jpg"
-          alt="CarFax Report"
-          className="w-28 md:w-32 hover:opacity-80 transition"
-        />
-      </a>
-    );
-  })()}
-</div>
+      {/* 💰 PRICING BOX */}
+      <div className="mt-6 mb-6">
+        <CarPricingBox title={title} price={price} views={car.views || 0} />
+      </div>
 
-
-
-    {/* 🖼️ GALLERY */}
-    <div className="mb-6">
-      <CarGallery schemaData={car.schemaData} />
+      {/* 🧩 SECTIONS */}
+      <div className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 mt-10">
+        {car.schemaData && <DynamicSections schemaData={car.schemaData} />}
+      </div>
     </div>
+  );
 
-    {/* 💰 PRICING BOX */}
-<div className="mt-6 mb-6">
-  <CarPricingBox
-    title={title}
-    price={price}
-    views={car.views || 0}
-  />
-</div>
+  function findStockValue(schemaData: any) {
+    if (!schemaData || typeof schemaData !== "object") return null;
 
-
-    {/* 🧩 SECTIONS */}
-    <div className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 mt-10">
-      {car.schemaData && <DynamicSections schemaData={car.schemaData} />}
-    </div>
-
-  </div>
-);
-
-
-
-
-function findStockValue(schemaData: any) {
-  if (!schemaData || typeof schemaData !== "object") return null;
-
-  for (const [sectionName, sectionValue] of Object.entries(schemaData)) {
-    if (
-      typeof sectionValue === "object" &&
-      sectionValue !== null &&
-      "stock" in sectionValue
-    ) {
-      return sectionValue.stock;
+    for (const [sectionName, sectionValue] of Object.entries(schemaData)) {
+      if (
+        typeof sectionValue === "object" &&
+        sectionValue !== null &&
+        "stock" in sectionValue
+      ) {
+        return sectionValue.stock;
+      }
     }
+
+    return null;
   }
 
-  return null;
-}
+  /* 🧩 Component that applies schema_order from Firestore */
+  /* 🧩 Component that applies schema_order from Firestore */
+  function DynamicSections({ schemaData }: { schemaData: any }) {
+    const [schemaOrder, setSchemaOrder] = useState<
+      { name: string; active: boolean }[] | null
+    >(null);
 
-/* 🧩 Component that applies schema_order from Firestore */
-/* 🧩 Component that applies schema_order from Firestore */
-function DynamicSections({ schemaData }: { schemaData: any }) {
-  const [schemaOrder, setSchemaOrder] = useState<
-    { name: string; active: boolean }[] | null
-  >(null);
-
-
-  const [schemaStructure, setSchemaStructure] = useState<any>(null);
-  useEffect(() => {
-    const fetchSchemaOrder = async () => {
-      try {
-        const ref = doc(db, "settings", "schema_order");
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setSchemaOrder(snap.data().sections || []);
-        } else {
-          setSchemaOrder([]); // fallback if missing
+    const [schemaStructure, setSchemaStructure] = useState<any>(null);
+    useEffect(() => {
+      const fetchSchemaOrder = async () => {
+        try {
+          const ref = doc(db, "settings", "schema_order");
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            setSchemaOrder(snap.data().sections || []);
+          } else {
+            setSchemaOrder([]); // fallback if missing
+          }
+        } catch (err) {
+          console.error("Error loading schema order:", err);
         }
-      } catch (err) {
-        console.error("Error loading schema order:", err);
-      }
-    };
-    fetchSchemaOrder();
-  }, []);
-
-  useEffect(() => {
-  const loadSchema = async () => {
-    const snap = await getDocs(collection(db, "car_schemas"));
-    const map: any = {};
-
-    snap.forEach((doc) => {
-      const data = doc.data();
-      const name = data.title;
-      map[name] = {
-        fields: (data.fields || [])
-          .filter((f: any) => f.active !== false)
-          .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0)),
       };
-    });
+      fetchSchemaOrder();
+    }, []);
 
-    setSchemaStructure(map);
-  };
+    useEffect(() => {
+      const loadSchema = async () => {
+        const snap = await getDocs(collection(db, "car_schemas"));
+        const map: any = {};
 
-  loadSchema();
-}, []);
+        snap.forEach((doc) => {
+          const data = doc.data();
+          const name = data.title;
+          map[name] = {
+            fields: (data.fields || [])
+              .filter((f: any) => f.active !== false)
+              .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0)),
+          };
+        });
 
-  if (!schemaOrder)
-    return (
-      <p className="text-gray-500 text-center mt-10">
-        Loading section structure...
-      </p>
+        setSchemaStructure(map);
+      };
+
+      loadSchema();
+    }, []);
+
+    if (!schemaOrder)
+      return (
+        <p className="text-gray-500 text-center mt-10">
+          Loading section structure...
+        </p>
+      );
+
+    // 🔹 Extrage doar secțiunile active și adaugă fallback pentru cele noi
+    const orderedSections = schemaOrder
+      .filter((s) => s.active)
+      .map((s) => s.name)
+      .filter((name) => !!schemaData[name]);
+
+    const definedNames = schemaOrder.map((s) => s.name.toLowerCase());
+    const remaining = Object.keys(schemaData).filter(
+      (key) => !definedNames.includes(key.toLowerCase())
     );
 
-  // 🔹 Extrage doar secțiunile active și adaugă fallback pentru cele noi
-  const orderedSections = schemaOrder
-    .filter((s) => s.active)
-    .map((s) => s.name)
-    .filter((name) => !!schemaData[name]);
+    const finalSections = Array.from(
+      new Map(
+        [...orderedSections, ...remaining].map((name) => [
+          name.toLowerCase(),
+          name,
+        ])
+      ).values()
+    );
 
-  const definedNames = schemaOrder.map((s) => s.name.toLowerCase());
-  const remaining = Object.keys(schemaData).filter(
-    (key) => !definedNames.includes(key.toLowerCase())
-  );
+    // ✅ Funcție robustă pentru extragerea ID-ului YouTube din orice format
+    const renderYouTubeEmbed = (url: string) => {
+      try {
+        const cleanUrl = url.trim();
 
-  
-
-
-
-
-  const finalSections = Array.from(
-    new Map(
-      [...orderedSections, ...remaining].map((name) => [
-        name.toLowerCase(),
-        name,
-      ])
-    ).values()
-  );
-
-  // ✅ Funcție robustă pentru extragerea ID-ului YouTube din orice format
-  const renderYouTubeEmbed = (url: string) => {
-    try {
-      const cleanUrl = url.trim();
-
-      // regex robust care prinde toate formele
-      const videoIdMatch = cleanUrl.match(
-        /(?:v=|\/embed\/|\/shorts\/|youtu\.be\/)([A-Za-z0-9_-]{11})/
-      );
-      const videoId = videoIdMatch ? videoIdMatch[1] : null;
-
-      // 🧩 DEBUG: vezi exact ce link e procesat și ce ID s-a extras
-      console.log(
-        "%c🎬 YouTube debug",
-        "background: #222; color: #4af; font-weight: bold; padding: 2px 6px; border-radius: 4px;",
-        "\nURL:",
-        cleanUrl,
-        "\nVideo ID:",
-        videoId
-      );
-
-      if (!videoId) {
-        console.warn("⚠️ Nu s-a putut extrage ID YouTube din:", url);
-        return (
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline"
-          >
-            {url}
-          </a>
+        // regex robust care prinde toate formele
+        const videoIdMatch = cleanUrl.match(
+          /(?:v=|\/embed\/|\/shorts\/|youtu\.be\/)([A-Za-z0-9_-]{11})/
         );
-      }
+        const videoId = videoIdMatch ? videoIdMatch[1] : null;
 
-      return (
-        <div className="mt-4 mb-6 aspect-video rounded-xl overflow-hidden shadow-lg border border-gray-200">
-          <iframe
-            className="w-full h-full"
-            src={`https://www.youtube.com/embed/${videoId}`}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          ></iframe>
-        </div>
-      );
-    } catch (err) {
-      console.error("❌ Invalid YouTube link:", url, err);
-      return null;
-    }
-  };
+        // 🧩 DEBUG: vezi exact ce link e procesat și ce ID s-a extras
+        console.log(
+          "%c🎬 YouTube debug",
+          "background: #222; color: #4af; font-weight: bold; padding: 2px 6px; border-radius: 4px;",
+          "\nURL:",
+          cleanUrl,
+          "\nVideo ID:",
+          videoId
+        );
 
-  // 🔹 Detectează dacă un string e un link YouTube
-  const isYouTubeLink = (value: any): value is string =>
-    typeof value === "string" &&
-    (value.includes("youtube.com") || value.includes("youtu.be"));
-
-  return (
-    <>
-      {finalSections.map((section) => {
-        const data = schemaData[section];
-        if (!data) return null;
-
-        // 🛑 Ascunde secțiunile complet goale
-        if (
-          typeof data === "object" &&
-          !Array.isArray(data) &&
-          Object.values(data).every(
-            (v) => v === null || v === "" || v === undefined
-          )
-        ) {
-          return null;
+        if (!videoId) {
+          console.warn("⚠️ Nu s-a putut extrage ID YouTube din:", url);
+          return (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              {url}
+            </a>
+          );
         }
 
-        const isArray = Array.isArray(data);
-        const isObject = typeof data === "object" && !isArray;
-        const skipFields = ["tempId", "createdAt", "updatedAt"];
-        if (skipFields.includes(section)) return null;
-
         return (
-          <section
-            key={section}
-            className="border-b border-gray-200 pb-10 last:border-0 last:pb-0"
-          >
-            {/* ASCUNDE TITLUL SECȚIUNII DACĂ TOATE VALORILE SUNT VIDEO */}
-  {!Object.values(data).every(v => typeof v === "string" && isYouTubeLink(v)) && (
-    <h2 className="text-3xl font-semibold mb-6 text-gray-900 tracking-tight uppercase">
-      {section}
-    </h2>
-  )}
-
-            {/* 🔹 Liste simple */}
-{isArray && (
-  <ul
-    className={`grid gap-x-8 gap-y-2 text-gray-800 text-[15px] leading-relaxed
-      ${section.toLowerCase() === "equipment"
-        ? "sm:grid-cols-3"   // 👉 EQUIPMENT = 3 coloane
-        : "sm:grid-cols-2"   // 👉 restul = 2 coloane
-      }
-    `}
-  >
-    {data.length > 0 ? (
-      data.map((item: string, i: number) =>
-        isYouTubeLink(item) ? (
-          <li key={i} className="col-span-3">
-            {renderYouTubeEmbed(item)}
-          </li>
-        ) : (
-          <li key={i} className="flex items-center gap-2">
-            <span className="text-blue-600 text-lg leading-none">•</span>
-            <span className="text-[15px]">{item}</span>
-          </li>
-        )
-      )
-    ) : (
-      <li className="text-gray-400 italic">No data available</li>
-    )}
-  </ul>
-)}
-
-            {/* 🔹 Obiecte structurate */}
-            {isObject && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-
-  {/* Dacă structura schema încă nu e încărcată, nu afișăm nimic */}
-  {!schemaStructure ? null : (() => {
-
-    // 1️⃣ Ordinea câmpurilor definită în schema builder
-    const orderedFields =
-      schemaStructure[section]?.fields?.map((f: any) => f.name) || [];
-
-    // 2️⃣ Câmpuri care exista în schemaData dar nu sunt definite în schema builder
-    const fallbackFields = Object.keys(data).filter(
-      (key) =>
-        !["content", "images", "tempId", "createdAt", "updatedAt"].includes(
-          key
-        ) && !orderedFields.includes(key)
-    );
-
-    // 3️⃣ Ordinea finală a câmpurilor
-    const finalFields = [...orderedFields, ...fallbackFields];
-
-    return finalFields.map((fieldName: string) => {
-      const fieldValue = data[fieldName];
-      if (!fieldValue) return null;
-
-      // -------------------------
-      // YouTube handling
-      // -------------------------
-      if (isYouTubeLink(fieldValue)) {
-        return (
-          <div key={fieldName} className="col-span-3 w-full">
-            {renderYouTubeEmbed(fieldValue)}
+          <div className="mt-4 mb-6 aspect-video rounded-xl overflow-hidden shadow-lg border border-gray-200">
+            <iframe
+              className="w-full h-full"
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
           </div>
         );
+      } catch (err) {
+        console.error("❌ Invalid YouTube link:", url, err);
+        return null;
+      }
+    };
+
+    // 🔹 Detectează dacă un string e un link YouTube
+    const isYouTubeLink = (value: any): value is string =>
+      typeof value === "string" &&
+      (value.includes("youtube.com") || value.includes("youtu.be"));
+
+    return (
+      <>
+        {finalSections.map((section) => {
+      const data = schemaData[section];
+      if (!data) return null;
+
+      // 🧽 Curățăm array-urile (eliminăm golurile, spațiile, punctele, newline-urile)
+let cleanedArray = null;
+if (Array.isArray(data)) {
+  cleanedArray = data
+    .map(item => (typeof item === "string" ? item.trim() : item))
+    .filter(
+      item =>
+        item &&
+        typeof item === "string" &&
+        item.length > 1 &&
+        item !== "." &&
+        item !== "·"
+    );
+}
+
+      // 🛑 Ascunde secțiunile complet goale (obiecte)
+      if (
+        typeof data === "object" &&
+        !Array.isArray(data) &&
+        Object.values(data).every(
+          (v) => v === null || v === "" || v === undefined
+        )
+      ) {
+        return null;
       }
 
-      // -------------------------
-      // FORMAT NUMBERS
-      // -------------------------
-      const formatIfNumber = (val: any, keyName: string) => {
-        if (val === null || val === undefined) return "";
+      // 🛑 Ascunde Highlights dacă e gol chiar și după curățare
+      if (
+        section.toLowerCase() === "highlights" &&
+        Array.isArray(data) &&
+        cleanedArray.length === 0
+      ) {
+        return null;
+      }
 
-        // year nu se formatează
-        if (keyName.trim().toLowerCase() === "year") {
-          return String(val);
-        }
+      const isArray = Array.isArray(data);
+      const isObject = typeof data === "object" && !isArray;
+      const skipFields = ["tempId", "createdAt", "updatedAt"];
+      if (skipFields.includes(section)) return null;
 
-        const num = Number(val);
-        return isNaN(num) ? String(val) : formatNumber(num);
-      };
+          return (
+            <section
+              key={section}
+              className="border-b border-gray-200 pb-10 last:border-0 last:pb-0"
+            >
+              {/* ASCUNDE TITLUL SECȚIUNII DACĂ TOATE VALORILE SUNT VIDEO */}
+              {!Object.values(data).every(
+                (v) => typeof v === "string" && isYouTubeLink(v)
+              ) && (
+                <h2 className="text-3xl font-semibold mb-6 text-gray-900 tracking-tight uppercase">
+                  {section}
+                </h2>
+              )}
 
-      const displayValue = Array.isArray(fieldValue)
-        ? fieldValue.map((v) => formatIfNumber(v, fieldName)).join(", ")
-        : formatIfNumber(fieldValue, fieldName);
+              {/* 🔹 Liste simple */}
+              {isArray && (
+                <ul
+                  className={`grid gap-x-8 gap-y-2 text-gray-800 text-[15px] leading-relaxed
+      ${
+        section.toLowerCase() === "equipment"
+          ? "sm:grid-cols-3"
+          : section.toLowerCase() === "highlights"
+          ? "grid-cols-1" // 👉 Highlights = 1 coloană
+          : "sm:grid-cols-2"
+      }
+    `}
+                >
+                  {data.length > 0 ? (
+                    cleanedArray.map((item: string, i: number) =>
+                      isYouTubeLink(item) ? (
+                        <li key={i} className="col-span-3">
+                          {renderYouTubeEmbed(item)}
+                        </li>
+                      ) : (
+                        <li key={i} className="flex items-start gap-2">
+                         <span className="mt-1 text-blue-600 text-lg leading-none">•</span>
+                          <span className="text-[15px]">{item}</span>
+                        </li>
+                      )
+                    )
+                  ) : (
+                    <li className="text-gray-400 italic">No data available</li>
+                  )}
+                </ul>
+              )}
 
-      // -------------------------
-      // UI Card Value
-      // -------------------------
-      return (
-        <div
-          key={fieldName}
-          className="flex flex-col bg-gray-50 border border-gray-100 rounded-lg p-4 hover:bg-gray-100 transition"
-        >
-          <span className="text-xs font-semibold uppercase text-gray-500 tracking-wide">
-            {fieldName.replace(/_/g, " ")}
-          </span>
+              {/* 🔹 Obiecte structurate */}
+              {isObject && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    {/* Dacă structura schema încă nu e încărcată, nu afișăm nimic */}
+                    {!schemaStructure
+                      ? null
+                      : (() => {
+                          // 1️⃣ Ordinea câmpurilor definită în schema builder
+                          const orderedFields =
+                            schemaStructure[section]?.fields?.map(
+                              (f: any) => f.name
+                            ) || [];
 
-          <span className="text-gray-900 font-medium text-base mt-1">
-            {displayValue}
-          </span>
-        </div>
-      );
-    });
-  })()}
+                          // 2️⃣ Câmpuri care exista în schemaData dar nu sunt definite în schema builder
+                          const fallbackFields = Object.keys(data).filter(
+                            (key) =>
+                              ![
+                                "content",
+                                "images",
+                                "tempId",
+                                "createdAt",
+                                "updatedAt",
+                              ].includes(key) && !orderedFields.includes(key)
+                          );
 
-</div>
+                          // 3️⃣ Ordinea finală a câmpurilor
+                          const finalFields = [
+                            ...orderedFields,
+                            ...fallbackFields,
+                          ];
 
+                          return finalFields.map((fieldName: string) => {
+                            const fieldValue = data[fieldName];
+                            if (!fieldValue) return null;
 
-                {/* 🔹 Content + imagini */}
-                {data.content && (
-                  <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-[15px]">
-                    {data.content}
+                            // -------------------------
+                            // YouTube handling
+                            // -------------------------
+                            if (isYouTubeLink(fieldValue)) {
+                              return (
+                                <div
+                                  key={fieldName}
+                                  className="col-span-3 w-full"
+                                >
+                                  {renderYouTubeEmbed(fieldValue)}
+                                </div>
+                              );
+                            }
+
+                            // -------------------------
+                            // FORMAT NUMBERS
+                            // -------------------------
+                            const formatIfNumber = (
+                              val: any,
+                              keyName: string
+                            ) => {
+                              if (val === null || val === undefined) return "";
+
+                              // year nu se formatează
+                              if (keyName.trim().toLowerCase() === "year") {
+                                return String(val);
+                              }
+
+                              const num = Number(val);
+                              return isNaN(num)
+                                ? String(val)
+                                : formatNumber(num);
+                            };
+
+                            const displayValue = Array.isArray(fieldValue)
+                              ? fieldValue
+                                  .map((v) => formatIfNumber(v, fieldName))
+                                  .join(", ")
+                              : formatIfNumber(fieldValue, fieldName);
+
+                            // -------------------------
+                            // UI Card Value
+                            // -------------------------
+                            return (
+                              <div
+                                key={fieldName}
+                                className="flex flex-col bg-gray-50 border border-gray-100 rounded-lg p-4 hover:bg-gray-100 transition"
+                              >
+                                <span className="text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                                  {fieldName.replace(/_/g, " ")}
+                                </span>
+
+                                <span className="text-gray-900 font-medium text-base mt-1">
+                                  {displayValue}
+                                </span>
+                              </div>
+                            );
+                          });
+                        })()}
                   </div>
-                )}
 
-                {/* 🔹 Imagini — sortate + prima imagine exterior afișată prima */}
-                {data.images &&
-                  Array.isArray(data.images) &&
-                  data.images.length > 0 &&
-                  (() => {
-                    // 🔸 Sortează imaginile după nume (alfabetic sau numeric)
-                    const sortedImages = [...data.images].sort((a, b) => {
-                      const aName = a.name?.toLowerCase() || "";
-                      const bName = b.name?.toLowerCase() || "";
+                  {/* 🔹 Content + imagini */}
+                  {data.content && (
+                    <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-[15px]">
+                      {data.content}
+                    </div>
+                  )}
 
-                      // dacă numele sunt numerice (ex: "1.jpg", "10.jpg"), sortează numeric
-                      const aNum = parseInt(aName);
-                      const bNum = parseInt(bName);
-                      if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+                  {/* 🔹 Imagini — sortate + prima imagine exterior afișată prima */}
+                  {data.images &&
+                    Array.isArray(data.images) &&
+                    data.images.length > 0 &&
+                    (() => {
+                      // 🔸 Sortează imaginile după nume (alfabetic sau numeric)
+                      const sortedImages = [...data.images].sort((a, b) => {
+                        const aName = a.name?.toLowerCase() || "";
+                        const bName = b.name?.toLowerCase() || "";
 
-                      // altfel sortare alfabetică naturală
-                      return aName.localeCompare(bName, undefined, {
-                        numeric: true,
+                        // dacă numele sunt numerice (ex: "1.jpg", "10.jpg"), sortează numeric
+                        const aNum = parseInt(aName);
+                        const bNum = parseInt(bName);
+                        if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+
+                        // altfel sortare alfabetică naturală
+                        return aName.localeCompare(bName, undefined, {
+                          numeric: true,
+                        });
                       });
-                    });
 
-                    // 🔸 dacă e secțiunea "Exterior", marchează prima imagine drept featured
-                    const featuredFirst =
-                      section.toLowerCase() === "exterior"
-                        ? [sortedImages[0], ...sortedImages.slice(1)]
-                        : sortedImages;
+                      // 🔸 dacă e secțiunea "Exterior", marchează prima imagine drept featured
+                      const featuredFirst =
+                        section.toLowerCase() === "exterior"
+                          ? [sortedImages[0], ...sortedImages.slice(1)]
+                          : sortedImages;
 
-                    return (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
-                        {featuredFirst.map((img: any, i: number) => (
-                          <div
-                            key={i}
-                            className={`relative overflow-hidden rounded-xl border border-gray-200 shadow-sm group ${
-                              section.toLowerCase() === "exterior" && i === 0
-                                ? "ring-2 ring-blue-500 ring-offset-2"
-                                : ""
-                            }`}
-                          >
-                            <img
-                              src={img.src}
-                              alt={`${section} ${i + 1}`}
-                              className={`object-cover w-full h-44 transition-transform duration-300 group-hover:scale-105 ${
+                      return (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
+                          {featuredFirst.map((img: any, i: number) => (
+                            <div
+                              key={i}
+                              className={`relative overflow-hidden rounded-xl border border-gray-200 shadow-sm group ${
                                 section.toLowerCase() === "exterior" && i === 0
-                                  ? "h-60 md:h-72"
+                                  ? "ring-2 ring-blue-500 ring-offset-2"
                                   : ""
                               }`}
-                              loading="lazy"
-                            />
+                            >
+                              <img
+                                src={img.src}
+                                alt={`${section} ${i + 1}`}
+                                className={`object-cover w-full h-44 transition-transform duration-300 group-hover:scale-105 ${
+                                  section.toLowerCase() === "exterior" &&
+                                  i === 0
+                                    ? "h-60 md:h-72"
+                                    : ""
+                                }`}
+                                loading="lazy"
+                              />
 
-                            {/* 🔸 Badge vizual opțional */}
-                            {section.toLowerCase() === "exterior" &&
-                              i === 0 && (
-                                <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-md shadow">
-                                  Featured
-                                </span>
-                              )}
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
-              </>
-            )}
-          </section>
-        );
-      })}
-    </>
-  );
-}
+                              {/* 🔸 Badge vizual opțional */}
+                              {section.toLowerCase() === "exterior" &&
+                                i === 0 && (
+                                  <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-md shadow">
+                                    Featured
+                                  </span>
+                                )}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                </>
+              )}
+            </section>
+          );
+        })}
+      </>
+    );
+  }
 }
