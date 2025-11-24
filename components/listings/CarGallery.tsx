@@ -70,16 +70,9 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
     );
 
   // 🔹 3. COMBINĂM IMAGINILE ÎN ORDINE DETERMINISTĂ
-  const allImages = useMemo(() => {
+//il readaugam daca nu mai merge schema data in [id]
+  /*const allImages = useMemo(() => {
     if (!schemaData) return [];
-
-    const sortImages = (arr: any[]) =>
-      [...arr].sort((a, b) =>
-        (a.name || "").localeCompare(b.name || "", undefined, {
-          numeric: true,
-          sensitivity: "base",
-        })
-      );
 
     return categories.flatMap((cat) =>
       sortImages(schemaData[cat].images).map((img: any) => ({
@@ -87,7 +80,26 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
         category: cat,
       }))
     );
-  }, [categories]);
+  }, [schemaData, categories]);*/
+
+  const allImages = useMemo(() => {
+  if (!schemaData) return [];
+
+  const sortImages = (arr: any[]) =>
+    [...arr].sort((a, b) =>
+      (a.name || "").localeCompare(b.name || "", undefined, {
+        numeric: true,
+        sensitivity: "base",
+      })
+    );
+
+  return categories.flatMap((cat) =>
+    sortImages(schemaData[cat].images).map((img: any) => ({
+      ...img,
+      category: cat,
+    }))
+  );
+}, [categories]);
 
   const openLightbox = (index: number, category = "All") => {
     setActiveCategory(category);
