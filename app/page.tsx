@@ -378,10 +378,10 @@ export default function HomePage() {
             <div className="flex gap-3">
               
               <Link
-                href="/contact"
+                href="/consign"
                 className="rounded-full bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700 transition"
               >
-                Talk to Us
+                Consign Now
               </Link>
             </div>
           </div>
