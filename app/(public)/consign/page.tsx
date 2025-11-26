@@ -54,7 +54,7 @@ export default function ConsignPage() {
         <div className="relative z-10 max-w-4xl mx-auto text-center px-6">
           <h1 className="text-4xl md:text-5xl  font-bold text-white leading-tight">
             CONSIGN WITH THE HIGH-QUALITY <br />
-            <span className="text-yellow-400 italic">DEALERSHIP</span>
+            <span className="text-blue-400 italic">DEALERSHIP</span>
           </h1>
           {/*
           <div className="mt-10">
@@ -68,7 +68,7 @@ export default function ConsignPage() {
       <section className="py-20 max-w-5xl mx-auto text-center px-6">
         <h2 className="text-4xl font-bold">
           Welcome to our new{" "}
-          <span className="italic text-yellow-500">Consignment Page.</span>
+          <span className="italic text-blue-500">Consignment Page.</span>
         </h2>
 
         <p className="max-w-2xl mx-auto text-gray-600 mt-4">
@@ -107,16 +107,16 @@ export default function ConsignPage() {
           <h2 className="text-4xl font-bold leading-tight">
             Consigning your vehicle <br />
             with us is the{" "}
-            <span className="italic text-yellow-500">Smart Move.</span>
+            <span className="italic text-blue-500">Smart Move.</span>
           </h2>
 
           {/* Vertical line */}
           <div className="relative mt-10">
             <div className="absolute left-0 top-0 h-full w-[3px] bg-gray-200"></div>
 
-            {/* Moving yellow bar */}
+            {/* Moving blue bar */}
             <div
-              className="absolute left-0 w-[3px] bg-yellow-400 transition-all duration-300"
+              className="absolute left-0 w-[3px] bg-blue-400 transition-all duration-300"
               style={{ top: `${(active - 1) * 120}px`, height: "90px" }}
             />
 
@@ -173,7 +173,7 @@ export default function ConsignPage() {
               Sell Your Car on Your Terms:
               <br />
               Pick the best way to{" "}
-              <span className="italic text-yellow-400">consign with us.</span>
+              <span className="italic text-blue-400">consign with us.</span>
             </h2>
 
             <p className="text-gray-200 text-center max-w-2xl mx-auto mt-4">
@@ -194,7 +194,7 @@ export default function ConsignPage() {
       {/*<section className="py-24 max-w-6xl mx-auto px-6">
         <h2 className="text-4xl text-center font-bold">
           Contact{" "}
-          <span className="italic text-yellow-500 font-serif">with Us</span>
+          <span className="italic text-blue-500 font-serif">with Us</span>
         </h2>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 text-gray-800">
