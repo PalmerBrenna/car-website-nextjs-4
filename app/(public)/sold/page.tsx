@@ -39,7 +39,7 @@ function rotateCarsDaily(cars: Car[], itemsPerPage: number) {
 
   // 🔹 numărul de zile de la 1970 (aprox "ziua curentă")
   const dayIndex = Math.floor(Date.now() / MS_PER_DAY);
-
+//const dayIndex = Math.floor(Date.now() / (60 * 1000)); // rotire la fiecare minut
   // 🔹 de câte ori aplicăm "ultima pagină devine prima"
   const pageRotations = dayIndex % totalPages;
 
