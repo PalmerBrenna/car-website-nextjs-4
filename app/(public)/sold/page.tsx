@@ -26,6 +26,35 @@ function findValue(schemaData: any, key: string) {
   return undefined;
 }
 
+//rotation logic
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function rotateCarsDaily(cars: Car[], itemsPerPage: number) {
+  const totalItems = cars.length;
+  if (totalItems === 0) return cars;
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  // Dacă ai o singură pagină, nu are rost să rotești
+  if (totalPages <= 1) return cars;
+
+  // 🔹 numărul de zile de la 1970 (aprox "ziua curentă")
+  const dayIndex = Math.floor(Date.now() / MS_PER_DAY);
+
+  // 🔹 de câte ori aplicăm "ultima pagină devine prima"
+  const pageRotations = dayIndex % totalPages;
+
+  if (pageRotations === 0) return cars;
+
+  // Câte elemente în total mutăm din coadă în față
+  const offset = (pageRotations * itemsPerPage) % totalItems;
+
+  // ultimele `offset` mașini vin în față
+  return [
+    ...cars.slice(totalItems - offset),
+    ...cars.slice(0, totalItems - offset),
+  ];
+}
+
 /* ---------- wrapper ---------- */
 export default function SoldPageWrapper() {
   return (
@@ -241,8 +270,11 @@ function SoldPage() {
       return 0;
     });
 
-  const totalPages = Math.ceil(filteredCars.length / ITEMS_PER_PAGE);
-  const paginatedCars = filteredCars.slice(
+  const rotatedCars = rotateCarsDaily(filteredCars, ITEMS_PER_PAGE);
+
+  const totalPages = Math.ceil(rotatedCars.length / ITEMS_PER_PAGE);
+
+  const paginatedCars = rotatedCars.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
