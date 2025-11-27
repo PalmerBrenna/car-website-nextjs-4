@@ -33,7 +33,7 @@ export default function CarPricingBox({ title, price }: CarPricingBoxProps) {
           <div className="flex items-center gap-4 flex-wrap pl-4 md:pl-6">
 
             <span className="text-3xl font-extrabold text-gray-900">
-              USD ${formatPrice(price)}
+               ${formatPrice(price)}
             </span>
 
             <div className="flex items-center gap-2 bg-gray-100 px-4 py-1.5 rounded-full shadow-sm border border-gray-200">
