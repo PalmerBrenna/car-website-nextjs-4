@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["firebase"],
 
   images: {
+    unoptimized: true,  
   formats: ["image/webp", "image/avif"],
   remotePatterns: [
     {
