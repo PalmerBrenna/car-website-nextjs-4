@@ -219,6 +219,7 @@ export default function AdminCarsPage() {
                   fill
                   sizes="100vw"
                   className="object-cover"
+                  unoptimized
                 />
               </div>
 

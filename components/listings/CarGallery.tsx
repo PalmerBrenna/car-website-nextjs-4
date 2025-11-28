@@ -119,6 +119,7 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
           className="object-cover cursor-pointer"
           onClick={() => openLightbox(0)}
           priority
+          unoptimized
         />
         <span className="absolute top-3 left-3 bg-gray-900/70 text-white text-xs px-2 py-1 rounded">
           FEATURED ({allImages[0]?.category || "N/A"})
@@ -139,6 +140,7 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
               fill
               sizes="200px"
               className="object-cover group-hover:scale-105 transition-transform"
+              unoptimized
             />
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition"></div>
 

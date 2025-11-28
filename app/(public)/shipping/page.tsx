@@ -136,6 +136,7 @@ export default function ShippingPage() {
           sizes="100vw"
           priority
           className="object-cover"
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
 
@@ -239,6 +240,7 @@ export default function ShippingPage() {
                   fill
                   sizes="100vw"
                   className="object-cover object-center"
+                  unoptimized
                 />
               </div>
 

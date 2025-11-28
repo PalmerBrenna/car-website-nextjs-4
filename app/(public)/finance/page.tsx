@@ -183,6 +183,7 @@ export default function FinancePage() {
           sizes="100vw"
           priority
           className="object-cover"
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
 
@@ -320,6 +321,7 @@ export default function FinancePage() {
                       sizes="100vw"
                       fill
                       className="object-cover object-center"
+                      unoptimized
                     />
                     {isEditing && (
                       <input

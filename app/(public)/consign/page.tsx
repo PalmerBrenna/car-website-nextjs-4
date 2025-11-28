@@ -46,6 +46,7 @@ export default function ConsignPage() {
           sizes="100vw"
           className="object-cover"
           priority
+          unoptimized
         />
 
         <div className="absolute inset-0 bg-black/30" />
@@ -99,6 +100,7 @@ export default function ConsignPage() {
             fill
             sizes="100vw"
             className="object-cover"
+            unoptimized
           />
         </div>
 
@@ -166,6 +168,7 @@ export default function ConsignPage() {
             fill
             sizes="100vw"
             className="object-cover opacity-40"
+            unoptimized
           />
 
           <div className="relative z-10 p-10">

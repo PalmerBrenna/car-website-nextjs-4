@@ -187,6 +187,7 @@ export default function AboutPage() {
               fill
               sizes="100vw"
               className="object-cover"
+              unoptimized
             />
             {isEditing && (
               <input
@@ -209,6 +210,7 @@ export default function AboutPage() {
               fill
               sizes="100vw"
               className="object-cover"
+              unoptimized
             />
             {isEditing && (
               <input
@@ -299,6 +301,7 @@ export default function AboutPage() {
             fill
             sizes="100vw"
             className="object-cover"
+            unoptimized
           />
           {isEditing && (
             <input

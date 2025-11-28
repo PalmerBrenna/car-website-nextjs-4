@@ -82,6 +82,7 @@ export default function ContactPage() {
           sizes="100vw"
           priority
           className="object-cover"
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">

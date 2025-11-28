@@ -95,6 +95,7 @@ export default function CarCardSold({ car }: Props) {
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover transition-transform duration-500"
+          unoptimized
         />
 
         {/* DIAGONAL SOLD OVERLAY */}
