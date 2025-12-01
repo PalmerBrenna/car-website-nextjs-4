@@ -34,7 +34,7 @@ export default function ContactPopup({
           {/* Contact */}
           <div>
             <h3 className="font-semibold text-sm text-gray-500">HOW TO REACH US</h3>
-            <p>(786) 462-9941</p>
+            <p>(386) 200-2349</p>
             <a
               href="mailto:info@dariellamotors.com"
               className="text-blue-600 underline hover:text-blue-800"
