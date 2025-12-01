@@ -482,7 +482,7 @@ export default function CarDetailsPage() {
                             // -------------------------
                             // FORMAT NUMBERS
                             // -------------------------
-                            const formatIfNumber = (
+                           /* const formatIfNumber = (
                               val: any,
                               keyName: string
                             ) => {
@@ -497,7 +497,21 @@ export default function CarDetailsPage() {
                               return isNaN(num)
                                 ? String(val)
                                 : formatNumber(num);
-                            };
+                            };*/
+
+                            const formatIfNumber = (val: any, keyName: string) => {
+  if (val === null || val === undefined) return "";
+
+  const normalized = keyName.trim().toLowerCase();
+
+  // year & vin nu se formatează
+  if (normalized === "year" || normalized === "vin") {
+    return String(val);
+  }
+
+  const num = Number(val);
+  return isNaN(num) ? String(val) : formatNumber(num);
+};
 
                             const displayValue = Array.isArray(fieldValue)
                               ? fieldValue
