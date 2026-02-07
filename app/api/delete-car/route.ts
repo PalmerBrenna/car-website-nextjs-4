@@ -16,6 +16,13 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Missing carId" }, { status: 400 });
     }
 
+    if (!adminDb) {
+      return NextResponse.json(
+        { error: "Firestore admin client not configured" },
+        { status: 500 }
+      );
+    }
+
     // 🔹 Citește documentul Firestore
     const carRef = adminDb.collection("cars").doc(carId);
     const snap = await carRef.get();
