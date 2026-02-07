@@ -49,7 +49,7 @@ export default function Footer() {
 
           {/* 🔹 Useful Links */}
           <div>
-            <h4 className="text-white font-semibold mb-3">Useful Links</h4>
+            <h4 className="text-white font-semibold mb-3">Useful Linksssssssssss</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/about" className="hover:underline">
