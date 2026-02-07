@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
-import { adminDb, adminStorage } from "@/lib/firebaseAdmin";
+import { adminDb } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -50,51 +50,28 @@ export async function POST(req: Request) {
     }
 
     const log: string[] = [];
-    const files: { fullPath: string; filename: string; section: string }[] = [];
+    const targetFolder = path.join(
+      process.cwd(),
+      "public",
+      "uploads",
+      carId
+    );
 
-    const walk = (dir: string, sections: string[] = []) => {
-      const entries = fs.readdirSync(dir);
-
-      for (const entry of entries) {
-        const full = path.join(dir, entry);
-        const stat = fs.statSync(full);
-
-        if (stat.isDirectory()) {
-          walk(full, [...sections, entry]);
-        } else {
-          files.push({
-            fullPath: full,
-            filename: entry,
-            section: sections[sections.length - 1] || "unknown",
-          });
-        }
-      }
-    };
-
-    walk(localFolder);
-
-    const uploadedPaths: Record<string, string> = {};
-
-    for (const f of files) {
-      const buffer = fs.readFileSync(f.fullPath);
-      const storagePath = `cars/${tempId}/${f.section}/${f.filename}`;
-      const fileRef = adminStorage.file(storagePath);
-
-      await fileRef.save(buffer, { public: true });
-
-      const newUrl = `https://storage.googleapis.com/${adminStorage.name}/${storagePath}`;
-      uploadedPaths[f.filename] = newUrl;
-
-      log.push(`Uploaded: ${f.filename} → ${storagePath}`);
+    if (fs.existsSync(targetFolder)) {
+      fs.rmSync(targetFolder, { recursive: true, force: true });
     }
+
+    fs.mkdirSync(path.dirname(targetFolder), { recursive: true });
+    fs.renameSync(localFolder, targetFolder);
+
+    const oldPrefix = `/uploads/${tempId}/`;
+    const newPrefix = `/uploads/${carId}/`;
 
     function updateLinks(obj: any) {
       for (const key in obj) {
         if (typeof obj[key] === "string") {
-          for (const filename of Object.keys(uploadedPaths)) {
-            if (obj[key].includes(filename)) {
-              obj[key] = uploadedPaths[filename];
-            }
+          if (obj[key].includes(oldPrefix)) {
+            obj[key] = obj[key].replace(oldPrefix, newPrefix);
           }
         } else if (typeof obj[key] === "object") {
           updateLinks(obj[key]);
@@ -104,22 +81,21 @@ export async function POST(req: Request) {
 
     updateLinks(schema);
 
+    log.push(`Moved folder: ${localFolder} → ${targetFolder}`);
+
     await adminDb.collection("cars").doc(carId).update({
       schemaData: schema,
       moved: true,        // <-- ADĂUGAT
       movedAt: Date.now() // <-- OPTIONAL
     });
 
-    fs.rmSync(localFolder, { recursive: true, force: true });
-
     return NextResponse.json({
       success: true,
-      moved: files.length,
-      firebaseFolder: tempId.toString(),
+      moved: true,
+      localFolder: targetFolder,
       carId,
       tempId,
       carName,
-      localFolder,
       log,
     });
   } catch (err: any) {

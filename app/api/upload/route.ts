@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
-import { adminStorage } from "@/lib/firebaseAdmin";
+import path from "path";
+import { promises as fs } from "fs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,18 +27,13 @@ export async function POST(req: Request) {
       .toBuffer();
 
     const filename = `${Date.now()}.webp`;
-    const filePath = `cars/${carId}/${section}/${filename}`;
+    const relativePath = path.join("uploads", carId, section, filename);
+    const outputPath = path.join(process.cwd(), "public", relativePath);
 
-    // 🔥 Upload direct în Firebase Storage
-    const fileRef = adminStorage.file(filePath);
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.writeFile(outputPath, optimized);
 
-    await fileRef.save(optimized, {
-      public: true,
-      contentType: "image/webp",
-    });
-
-    // 🔗 URL public
-    const publicUrl = `https://storage.googleapis.com/${adminStorage.name}/${filePath}`;
+    const publicUrl = `/${relativePath.replace(/\\/g, "/")}`;
 
     console.log("✅ Uploaded:", publicUrl);
 
