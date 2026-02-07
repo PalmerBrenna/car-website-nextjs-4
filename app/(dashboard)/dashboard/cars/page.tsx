@@ -2,7 +2,7 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { getFirebaseAuth, getDb } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
@@ -22,6 +22,29 @@ function findValue(schemaData: any, key: string) {
     }
   }
   return undefined;
+}
+
+function collectFilesToDelete(schemaData: any) {
+  if (!schemaData || typeof schemaData !== "object") return [];
+  const files: string[] = [];
+
+  for (const section of Object.values(schemaData)) {
+    if (!section || typeof section !== "object") continue;
+
+    if (Array.isArray(section.images)) {
+      section.images.forEach((img: any) => {
+        if (img?.src) files.push(img.src);
+      });
+    }
+
+    if (Array.isArray(section.files)) {
+      section.files.forEach((file: any) => {
+        if (file?.src) files.push(file.src);
+      });
+    }
+  }
+
+  return files;
 }
 
 export default function UserCarsPage() {
@@ -50,17 +73,29 @@ export default function UserCarsPage() {
     })();
   }, []);
 
-  const handleDelete = async (carId: string) => {
+  const handleDelete = async (car: Car) => {
     if (!confirm("Sigur vrei să ștergi acest anunț?")) return;
 
     try {
-      setDeleting(carId);
-      const res = await fetch(`/api/delete-car?id=${carId}`, { method: "DELETE" });
+      setDeleting(car.id);
+      const filesToDelete = collectFilesToDelete(car.schemaData);
+      const res = await fetch(`/api/delete-car?id=${car.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filesToDelete }),
+      });
       const data = await res.json();
 
       if (!data.success) throw new Error(data.error || "Eroare la ștergere");
 
-      setCars((prev) => prev.filter((c) => c.id !== carId));
+      if (data.firestoreDeleted === false) {
+        const db = getDb();
+        await deleteDoc(doc(db, "cars", car.id));
+      }
+
+      setCars((prev) => prev.filter((c) => c.id !== car.id));
       alert("✅ Anunț șters cu succes!");
     } catch (err) {
       console.error(err);
@@ -169,7 +204,7 @@ export default function UserCarsPage() {
                     </div>
 
                     <button
-                      onClick={() => handleDelete(car.id)}
+                      onClick={() => handleDelete(car)}
                       disabled={deleting === car.id}
                       className={`flex items-center gap-1 px-3 py-1 rounded text-sm transition ${
                         deleting === car.id
