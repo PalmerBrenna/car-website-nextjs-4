@@ -1,6 +1,8 @@
 // app/api/delete-car/route.ts
 import { NextResponse } from "next/server";
-import { adminDb, adminStorage } from "@/lib/firebaseAdmin";
+import path from "path";
+import { promises as fs } from "fs";
+import { adminDb } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,8 +27,6 @@ export async function DELETE(req: Request) {
     const carData = snap.data();
     const schemaData = carData?.schemaData || {};
 
-    const bucket = adminStorage;
-
     // 🔥 Colectăm toate imaginile + fișierele referite în schemaData
     const filesToDelete: string[] = [];
 
@@ -48,28 +48,30 @@ export async function DELETE(req: Request) {
       }
     }
 
-    // 🔥 Ștergem toate fișierele din Firebase Storage
+    // 🔥 Ștergem toate fișierele locale din /public/uploads
     for (const url of filesToDelete) {
-  try {
-    const decoded = decodeURIComponent(url);
+      try {
+        if (!url.includes("/uploads/")) {
+          continue;
+        }
 
-    // numele bucketului
-    const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
+        const relativePath = url.split("/uploads/")[1];
+        const absolutePath = path.join(
+          process.cwd(),
+          "public",
+          "uploads",
+          relativePath
+        );
 
-    // prefixul URL gcs
-    const prefix = `https://storage.googleapis.com/${bucketName}/`;
+        await fs.unlink(absolutePath);
+        console.log("🗑️ Deleted:", absolutePath);
+      } catch (err) {
+        console.error("⚠️ Failed to delete:", url, err);
+      }
+    }
 
-    // scoatem prefixul și rămâne doar path-ul
-    const storagePath = decoded.replace(prefix, "");
-
-    await bucket.file(storagePath).delete();
-
-    console.log("🗑️ Deleted:", storagePath);
-  } catch (err) {
-    console.error("⚠️ Failed to delete:", url, err);
-  }
-}
-
+    const carFolder = path.join(process.cwd(), "public", "uploads", carId);
+    await fs.rm(carFolder, { recursive: true, force: true });
 
     // 🔹 Ștergem documentul Firestore
     await carRef.delete();

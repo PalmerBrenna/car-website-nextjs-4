@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { adminStorage } from "@/lib/firebaseAdmin";
+import path from "path";
+import { promises as fs } from "fs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,18 +27,13 @@ export async function POST(req: Request) {
     // 🔹 Generăm nume unic
     const filename = `${Date.now()}.${ext}`;
 
-    // 🔹 Path în Firebase Storage
-    const filePath = `cars/${carId}/${section}/${filename}`;
-    const fileRef = adminStorage.file(filePath);
+    const relativePath = path.join("uploads", carId, section, filename);
+    const outputPath = path.join(process.cwd(), "public", relativePath);
 
-    // 🔹 Upload direct în Firebase Storage
-    await fileRef.save(buffer, {
-      public: true,
-      contentType: file.type || "application/octet-stream",
-    });
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.writeFile(outputPath, buffer);
 
-    // 🔗 Link public
-    const publicUrl = `https://storage.googleapis.com/${adminStorage.name}/${filePath}`;
+    const publicUrl = `/${relativePath.replace(/\\/g, "/")}`;
 
     console.log("📄 Uploaded file:", publicUrl);
 
