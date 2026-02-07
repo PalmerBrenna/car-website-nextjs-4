@@ -30,9 +30,9 @@ export function getFirebaseApp() {
       projectId:
         process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
         (import.meta as any)?.env?.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-      storageBucket:
-        process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
-        (import.meta as any)?.env?.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      //storageBucket:
+      //  process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
+      //  (import.meta as any)?.env?.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       messagingSenderId:
         process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ||
         (import.meta as any)?.env?.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
@@ -42,9 +42,7 @@ export function getFirebaseApp() {
       measurementId:
         process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ||
         (import.meta as any)?.env?.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-      storagebucket:
-        process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
-        (import.meta as any)?.env?.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      
     };
 
     // ❌ Dacă lipsesc variabile, log explicit
