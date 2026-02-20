@@ -290,7 +290,7 @@ function SoldPage() {
           priority
           sizes="100vw"
           className="object-cover object-center"
-          //unoptimized
+          unoptimized
         />
         {isEditing && (
           <input
