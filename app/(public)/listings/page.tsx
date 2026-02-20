@@ -272,7 +272,7 @@ function ListingsPage() {
           sizes="100vw"
           priority
           className="object-cover"
-          unoptimized
+       //   unoptimized
         />
         {isEditing && (
           <input

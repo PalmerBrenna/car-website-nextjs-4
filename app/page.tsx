@@ -76,7 +76,7 @@ function ListingCard({ car }: { car: Car }) {
           fill
           sizes="100vw"
           className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-          unoptimized
+          //unoptimized
         />
         {car.status && (
           <span
@@ -195,7 +195,7 @@ export default function HomePage() {
             sizes="100vw"
             priority
             className="object-cover"
-            unoptimized
+            //unoptimized
           />
           {isEditing && (
             <input
