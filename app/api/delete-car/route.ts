@@ -36,20 +36,31 @@ const buildFilesToDeleteFromSchema = (schemaData: Record<string, any>) => {
   return files;
 };
 
+const getUploadRelativePath = (value: string) => {
+  if (!value.includes("/uploads/")) return null;
+
+  const relativePath = value.split("/uploads/")[1]?.split("?")[0]?.split("#")[0];
+  if (!relativePath) return null;
+
+  return relativePath.replace(/^\/+/, "");
+};
+
 const deleteLocalUploads = async (carId: string, filesToDelete: string[]) => {
+  const foldersToRemove = new Set<string>([carId]);
+
   for (const url of filesToDelete) {
     try {
-      if (!url.includes("/uploads/")) {
+      const relativePath = getUploadRelativePath(url);
+      if (!relativePath) {
         continue;
       }
 
-      const relativePath = url.split("/uploads/")[1];
-      const absolutePath = path.join(
-        process.cwd(),
-        "public",
-        "uploads",
-        relativePath
-      );
+      const folderName = relativePath.split("/")[0];
+      if (folderName && folderName !== "pages") {
+        foldersToRemove.add(folderName);
+      }
+
+      const absolutePath = path.join(process.cwd(), "public", "uploads", relativePath);
 
       await fs.unlink(absolutePath);
       console.log("🗑️ Deleted:", absolutePath);
@@ -58,8 +69,24 @@ const deleteLocalUploads = async (carId: string, filesToDelete: string[]) => {
     }
   }
 
-  const carFolder = path.join(process.cwd(), "public", "uploads", carId);
-  await fs.rm(carFolder, { recursive: true, force: true });
+  for (const folderName of foldersToRemove) {
+    const folderPath = path.join(process.cwd(), "public", "uploads", folderName);
+    await fs.rm(folderPath, { recursive: true, force: true });
+  }
+};
+
+const isFirestoreAdminUnauthenticatedError = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+
+  const firestoreError = error as { code?: number | string; message?: string };
+  const message = String(firestoreError.message || "").toUpperCase();
+
+  return (
+    firestoreError.code === 16 ||
+    firestoreError.code === "16" ||
+    message.includes("UNAUTHENTICATED") ||
+    message.includes("INVALID AUTHENTICATION CREDENTIALS")
+  );
 };
 
 export async function DELETE(req: Request) {
@@ -90,7 +117,19 @@ export async function DELETE(req: Request) {
 
     // 🔹 Citește documentul Firestore
     const carRef = adminDb.collection("cars").doc(carId);
-    const snap = await carRef.get();
+    let snap;
+
+    try {
+      snap = await carRef.get();
+    } catch (error) {
+      if (!isFirestoreAdminUnauthenticatedError(error)) {
+        throw error;
+      }
+
+      console.warn("⚠️ Firestore admin auth failed. Falling back to client-side doc deletion.");
+      await deleteLocalUploads(carId, bodyFiles);
+      return NextResponse.json({ success: true, firestoreDeleted: false });
+    }
 
     if (!snap.exists) {
       return NextResponse.json({ error: "Car not found" }, { status: 404 });

@@ -122,7 +122,7 @@ export default function CarCard({ car }: Props) {
          (max-width: 1024px) 50vw,
          33vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          unoptimized
+          //unoptimized
         />
 
         {/* 🔹 Gradient overlay */}
