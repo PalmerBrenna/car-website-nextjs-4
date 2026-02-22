@@ -1,13 +1,15 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { getFirebaseAuth, getDb } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
 import { Trash2, Eye } from "lucide-react";
 import { Car } from "@/lib/types";
+
+const CARS_PER_PAGE = 9;
 
 /* 🧠 Helper pentru extragerea valorilor din schemaData */
 function findValue(schemaData: any, key: string) {
@@ -51,6 +53,7 @@ export default function UserCarsPage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     (async () => {
@@ -72,6 +75,19 @@ export default function UserCarsPage() {
       return () => unsubscribe();
     })();
   }, []);
+
+  const totalPages = Math.max(1, Math.ceil(cars.length / CARS_PER_PAGE));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedCars = useMemo(() => {
+    const start = (currentPage - 1) * CARS_PER_PAGE;
+    return cars.slice(start, start + CARS_PER_PAGE);
+  }, [cars, currentPage]);
 
   const handleDelete = async (car: Car) => {
     if (!confirm("Sigur vrei să ștergi acest anunț?")) return;
@@ -122,105 +138,147 @@ export default function UserCarsPage() {
       {cars.length === 0 ? (
         <p className="text-gray-500">Nu ai adăugat niciun anunț încă.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cars.map((car) => {
-            const mainImage =
-              car?.schemaData?.Exterior?.images?.[0]?.src ||
-              car?.images?.exterior?.[0] ||
-              "/images/placeholder-car.jpg";
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedCars.map((car) => {
+              const mainImage =
+                car?.schemaData?.Exterior?.images?.[0]?.src ||
+                car?.images?.exterior?.[0] ||
+                "/images/placeholder-car.jpg";
 
-            const title =
-              findValue(car.schemaData, "Title") ||
-              findValue(car.schemaData, "Titlu") ||
-              "Titlu necunoscut";
+              const title =
+                findValue(car.schemaData, "Title") ||
+                findValue(car.schemaData, "Titlu") ||
+                "Titlu necunoscut";
 
-            const price =
-              findValue(car.schemaData, "Price") ||
-              findValue(car.schemaData, "Preț") ||
-              undefined;
+              const price =
+                findValue(car.schemaData, "Price") ||
+                findValue(car.schemaData, "Preț") ||
+                undefined;
 
-            const mileage =
-              findValue(car.schemaData, "Mileage") ||
-              findValue(car.schemaData, "Kilometraj") ||
-              undefined;
+              const mileage =
+                findValue(car.schemaData, "Mileage") ||
+                findValue(car.schemaData, "Kilometraj") ||
+                undefined;
 
-            const year =
-              findValue(car.schemaData, "Year") ||
-              findValue(car.schemaData, "An fabricație") ||
-              undefined;
+              const year =
+                findValue(car.schemaData, "Year") ||
+                findValue(car.schemaData, "An fabricație") ||
+                undefined;
 
-            return (
-              <div
-                key={car.id}
-                className="border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white hover:shadow-lg transition relative"
-              >
-                {/* Imagine mașină */}
-                <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
-                  <img
-                    src={mainImage}
-                    alt={title}
-                    className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-                  />
-                  <span
-                    className={`absolute top-2 left-2 px-2 py-1 text-xs font-bold text-white rounded ${
-                      car.status === "available"
-                        ? "bg-green-600"
-                        : car.status === "pending"
-                        ? "bg-yellow-500"
-                        : "bg-red-500"
-                    }`}
-                  >
-                    {car.status?.toUpperCase()}
-                  </span>
-                </div>
-
-                {/* Conținut card */}
-                <div className="p-4 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold truncate mb-1">{title}</h3>
-                    <p className="text-sm text-gray-500 mb-2">
-                      {year || "N/A"} • {mileage ? `${mileage} mileage` : "—"}
-                    </p>
-                    <p className="text-blue-600 font-bold text-lg mb-3">
-                      {price ? `${price} $` : "—"}
-                    </p>
-                  </div>
-
-                  <div className="flex justify-between items-center mt-3">
-                    <div className="flex items-center gap-3">
-                      <Link
-                        href={`/listings/${car.id}`}
-                        className="flex items-center gap-1 text-blue-600 hover:underline"
-                      >
-                        <Eye size={16} /> Vezi
-                      </Link>
-
-                      <Link
-                        href={`/dashboard/cars/edit/${car.id}`}
-                        className="flex items-center gap-1 text-green-600 hover:underline"
-                      >
-                        ✏️ Editează
-                      </Link>
-                    </div>
-
-                    <button
-                      onClick={() => handleDelete(car)}
-                      disabled={deleting === car.id}
-                      className={`flex items-center gap-1 px-3 py-1 rounded text-sm transition ${
-                        deleting === car.id
-                          ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                          : "bg-red-100 text-red-600 hover:bg-red-200"
+              return (
+                <div
+                  key={car.id}
+                  className="border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white hover:shadow-lg transition relative"
+                >
+                  {/* Imagine mașină */}
+                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
+                    <img
+                      src={mainImage}
+                      alt={title}
+                      className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                    />
+                    <span
+                      className={`absolute top-2 left-2 px-2 py-1 text-xs font-bold text-white rounded ${
+                        car.status === "available"
+                          ? "bg-green-600"
+                          : car.status === "pending"
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
                       }`}
                     >
-                      <Trash2 size={16} />
-                      {deleting === car.id ? "Ștergere..." : "Șterge"}
-                    </button>
+                      {car.status?.toUpperCase()}
+                    </span>
+                  </div>
+
+                  {/* Conținut card */}
+                  <div className="p-4 flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold truncate mb-1">{title}</h3>
+                      <p className="text-sm text-gray-500 mb-2">
+                        {year || "N/A"} • {mileage ? `${mileage} mileage` : "—"}
+                      </p>
+                      <p className="text-blue-600 font-bold text-lg mb-3">
+                        {price ? `${price} $` : "—"}
+                      </p>
+                    </div>
+
+                    <div className="flex justify-between items-center mt-3">
+                      <div className="flex items-center gap-3">
+                        <Link
+                          href={`/listings/${car.id}`}
+                          className="flex items-center gap-1 text-blue-600 hover:underline"
+                        >
+                          <Eye size={16} /> Vezi
+                        </Link>
+
+                        <Link
+                          href={`/dashboard/cars/edit/${car.id}`}
+                          className="flex items-center gap-1 text-green-600 hover:underline"
+                        >
+                          ✏️ Editează
+                        </Link>
+                      </div>
+
+                      <button
+                        onClick={() => handleDelete(car)}
+                        disabled={deleting === car.id}
+                        className={`flex items-center gap-1 px-3 py-1 rounded text-sm transition ${
+                          deleting === car.id
+                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            : "bg-red-100 text-red-600 hover:bg-red-200"
+                        }`}
+                      >
+                        <Trash2 size={16} />
+                        {deleting === car.id ? "Ștergere..." : "Șterge"}
+                      </button>
+                    </div>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-sm text-gray-600">
+                Pagina {currentPage} din {totalPages}
+              </p>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-md border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  ← Anterioară
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1.5 rounded-md border text-sm ${
+                      currentPage === page
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-md border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Următoare →
+                </button>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
