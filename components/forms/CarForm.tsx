@@ -127,12 +127,12 @@ export default function DynamicCarForm({ initialData = {}, onSubmit, carId: exis
   // 🔹 Upload imagini (păstrează ordinea numerică/alfabetică a numelui fișierului)
   const handleImageUpload = async (
     sectionTitle: string,
-    files: FileList | null
+    selectedFiles: File[]
   ) => {
-    if (!files) return;
+    if (!selectedFiles.length) return;
 
     // 🔸 Convertim în array și sortăm alfabetic (1.jpg, 2.jpg, 10.jpg etc)
-    const sortedFiles = Array.from(files).sort((a, b) => {
+    const sortedFiles = [...selectedFiles].sort((a, b) => {
       const aName = a.name.toLowerCase();
       const bName = b.name.toLowerCase();
 
@@ -169,6 +169,11 @@ export default function DynamicCarForm({ initialData = {}, onSubmit, carId: exis
         body: formDataUpload,
       });
       const data = await res.json();
+
+      if (!res.ok) {
+        console.error(`❌ Upload eșuat pentru ${file.name}:`, data?.error || data);
+        continue;
+      }
 
       if (data.secure_url)
         uploaded.push({
@@ -400,9 +405,11 @@ export default function DynamicCarForm({ initialData = {}, onSubmit, carId: exis
                 type="file"
                 multiple
                 accept="image/*"
-                onChange={(e) =>
-                  handleImageUpload(section.title, e.target.files)
-                }
+                onChange={async (e) => {
+                  const files = Array.from(e.currentTarget.files || []);
+                  await handleImageUpload(section.title, files);
+                  e.currentTarget.value = "";
+                }}
                 className="mb-4"
               />
 
