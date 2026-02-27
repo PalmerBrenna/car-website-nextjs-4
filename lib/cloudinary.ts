@@ -166,7 +166,7 @@ export const extractCloudinaryPublicId = (value?: string | null) => {
   if (!value || typeof value !== "string") return null;
 
   const fromPublicId = value.match(/([\w/-]+)$/)?.[1];
-  if (value.startsWith("car-website-nextjs-1/") && fromPublicId) {
+  if (value.startsWith("car-website-nextjs-4/") && fromPublicId) {
     return fromPublicId;
   }
 
