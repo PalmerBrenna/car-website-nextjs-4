@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["firebase"],
 
   images: {
-    unoptimized: true,  
+   // unoptimized: true,  
   formats: ["image/webp", "image/avif"],
   remotePatterns: [
     {
@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
     {
       protocol: "https",
       hostname: "storage.googleapis.com",
+      pathname: "/**",
+    },
+    {
+      protocol: "https",
+      hostname: "res.cloudinary.com",
       pathname: "/**",
     },
   ],
