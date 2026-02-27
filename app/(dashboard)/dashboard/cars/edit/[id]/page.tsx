@@ -44,7 +44,11 @@ export default function EditCarPage() {
       <h1 className="text-3xl font-bold mb-6">Editează anunțul</h1>
 
       {/* Refolosim formularul existent */}
-      <DynamicCarForm initialData={carData.schemaData} onSubmit={handleUpdate} />
+      <DynamicCarForm
+        initialData={carData.schemaData}
+        carId={id as string}
+        onSubmit={handleUpdate}
+      />
     </div>
   );
 }

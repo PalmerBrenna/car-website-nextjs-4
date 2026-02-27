@@ -122,20 +122,37 @@ export default function CarDetailsPage() {
 
         {/* RIGHT — CARFAX LOGO (aliniat cu textul, nu cu partea de sus) */}
         {(() => {
-          let pdfFile = null;
+          const pickPdfItem = (items: any[] | undefined) => {
+            if (!Array.isArray(items) || items.length === 0) return null;
+
+            const imageDelivery = items.find(
+              (item) =>
+                typeof item?.src === "string" &&
+                (item?.resource_type === "image" ||
+                  item.src.includes("/image/upload/"))
+            );
+
+            if (imageDelivery) return imageDelivery;
+
+            return items.find(
+              (item) => typeof item?.src === "string" && item.src.length > 0
+            );
+          };
 
           const files = car.schemaData["Files"]?.files;
-          if (Array.isArray(files) && files[0]?.src) pdfFile = files[0].src;
-
           const pdf = car.schemaData["PDF"]?.files;
-          if (!pdfFile && Array.isArray(pdf) && pdf[0]?.src)
-            pdfFile = pdf[0].src;
 
+          const pdfItem = pickPdfItem(files) || pickPdfItem(pdf);
+          const pdfFile = pdfItem?.src;
           if (!pdfFile) return null;
+
+          const pdfHref = pdfItem?.public_id
+            ? `/api/files/view?publicId=${encodeURIComponent(pdfItem.public_id)}&format=pdf&src=${encodeURIComponent(pdfFile)}`
+            : pdfFile;
 
           return (
             <a
-              href={pdfFile}
+              href={pdfHref}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 md:mt-0 md:ml-4"
