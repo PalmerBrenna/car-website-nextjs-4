@@ -27,10 +27,10 @@ export async function POST(req: Request) {
 
     const uploaded = await uploadToCloudinary({
       file,
-      folder: `car-website-nextjs-2/cars/${carId}/${slugify(section) || "files"}`,
+      folder: `car-website-nextjs-1/cars/${carId}/${slugify(section) || "files"}`,
       // Use image resource type for PDFs so Cloudinary serves a viewable URL
       resourceType: "image",
-      tags: ["car-website-nextjs-2", "cars", carId, "files"],
+      tags: ["car-website-nextjs-1", "cars", carId, "files"],
     });
 
     return NextResponse.json({

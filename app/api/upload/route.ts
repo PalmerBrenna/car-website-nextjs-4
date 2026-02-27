@@ -48,9 +48,9 @@ export async function POST(req: Request) {
 
     const uploaded = await uploadToCloudinary({
       file: webpFile,
-      folder: `car-website-nextjs-2/cars/${carId}/${sectionFolder}`,
+      folder: `car-website-nextjs-1/cars/${carId}/${sectionFolder}`,
       resourceType: "image",
-      tags: ["car-website-nextjs-2", "cars", carId, sectionFolder],
+      tags: ["car-website-nextjs-1", "cars", carId, sectionFolder],
     });
 
     return NextResponse.json({
