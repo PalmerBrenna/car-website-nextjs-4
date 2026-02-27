@@ -3,6 +3,7 @@ import { db } from "./firebase";
 import {
   collection,
   addDoc,
+  setDoc,
   getDocs,
   getDoc,
   updateDoc,
@@ -19,8 +20,18 @@ import { Car } from "./types";
    ========================================================= */
 
 // 🔹 Adaugă o mașină nouă
-export async function addCar(car: Car) {
+export async function addCar(car: Car, customId?: string) {
   const carsRef = collection(db, "cars");
+
+  if (customId) {
+    const docRef = doc(carsRef, customId);
+    await setDoc(docRef, {
+      ...car,
+      createdAt: serverTimestamp(),
+    });
+    return customId;
+  }
+
   const docRef = await addDoc(carsRef, {
     ...car,
     createdAt: serverTimestamp(),

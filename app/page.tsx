@@ -175,6 +175,7 @@ export default function HomePage() {
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("folderType", "main");
     const res = await fetch("/api/upload-page", {
       method: "POST",
       body: formData,

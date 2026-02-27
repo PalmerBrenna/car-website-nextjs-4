@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
-import path from "path";
-import { promises as fs } from "fs";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-_]/g, "");
 
 export async function POST(req: Request) {
   try {
@@ -19,25 +25,20 @@ export async function POST(req: Request) {
       );
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploaded = await uploadToCloudinary({
+      file,
+      folder: `car-website-nextjs-2/cars/${carId}/${slugify(section) || "files"}`,
+      // Use image resource type for PDFs so Cloudinary serves a viewable URL
+      resourceType: "image",
+      tags: ["car-website-nextjs-2", "cars", carId, "files"],
+    });
 
-    // 🔹 Extragem extensia
-    const ext = file.name.split(".").pop() || "pdf";
-
-    // 🔹 Generăm nume unic
-    const filename = `${Date.now()}.${ext}`;
-
-    const relativePath = path.join("uploads", carId, section, filename);
-    const outputPath = path.join(process.cwd(), "public", relativePath);
-
-    await fs.mkdir(path.dirname(outputPath), { recursive: true });
-    await fs.writeFile(outputPath, buffer);
-
-    const publicUrl = `/${relativePath.replace(/\\/g, "/")}`;
-
-    console.log("📄 Uploaded file:", publicUrl);
-
-    return NextResponse.json({ url: publicUrl });
+    return NextResponse.json({
+      url: uploaded.secure_url,
+      secure_url: uploaded.secure_url,
+      public_id: uploaded.public_id,
+      resource_type: uploaded.resource_type,
+    });
   } catch (error: any) {
     console.error("❌ upload-file error:", error);
     return NextResponse.json(

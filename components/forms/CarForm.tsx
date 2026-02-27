@@ -24,9 +24,10 @@ interface Section {
 interface Props {
   initialData?: any;
   onSubmit?: (data: any) => Promise<void> | void;
+  carId?: string;
 }
 
-export default function DynamicCarForm({ initialData = {}, onSubmit }: Props) {
+export default function DynamicCarForm({ initialData = {}, onSubmit, carId: existingCarId }: Props) {
   const [schema, setSchema] = useState<Section[]>([]);
   const [formData, setFormData] = useState<any>(initialData || {});
   const [loading, setLoading] = useState(true);
@@ -147,12 +148,12 @@ export default function DynamicCarForm({ initialData = {}, onSubmit }: Props) {
 
     const uploaded: any[] = [];
 
-    const carId = formData.tempId || Date.now().toString();
+    const carId = existingCarId || formData.carId || Date.now().toString();
 
-    if (!formData.tempId) {
+    if (!existingCarId && !formData.carId) {
       setFormData((prev: any) => ({
         ...prev,
-        tempId: carId,
+        carId,
       }));
     }
 
@@ -169,10 +170,13 @@ export default function DynamicCarForm({ initialData = {}, onSubmit }: Props) {
       });
       const data = await res.json();
 
-      if (data.url)
+      if (data.secure_url)
         uploaded.push({
           name: file.name,
-          src: data.url,
+          src: data.secure_url,
+          secure_url: data.secure_url,
+          public_id: data.public_id,
+          resource_type: data.resource_type || "image",
         });
     }
 
@@ -200,12 +204,12 @@ export default function DynamicCarForm({ initialData = {}, onSubmit }: Props) {
 
     const uploaded: any[] = [];
 
-    const carId = formData.tempId || Date.now().toString();
+    const carId = existingCarId || formData.carId || Date.now().toString();
 
-    if (!formData.tempId) {
+    if (!existingCarId && !formData.carId) {
       setFormData((prev: any) => ({
         ...prev,
-        tempId: carId,
+        carId,
       }));
     }
 
@@ -222,10 +226,13 @@ export default function DynamicCarForm({ initialData = {}, onSubmit }: Props) {
 
       const data = await res.json();
 
-      if (data.url) {
+      if (data.secure_url) {
         uploaded.push({
           name: file.name,
-          src: data.url,
+          src: data.secure_url,
+          secure_url: data.secure_url,
+          public_id: data.public_id,
+          resource_type: data.resource_type || "image",
         });
       }
     }
@@ -270,7 +277,7 @@ export default function DynamicCarForm({ initialData = {}, onSubmit }: Props) {
       ownerId: user.uid,
       status: "pending",
       createdAt: new Date().toISOString(),
-      tempId: formData.tempId || null,
+      carId: formData.carId || null,
     });*/
 
     // 🟦 GENERARE STOCK AUTOMAT - DOAR LA CREAREA ANUNȚULUI NOU
@@ -289,13 +296,17 @@ export default function DynamicCarForm({ initialData = {}, onSubmit }: Props) {
       },
     };
 
+    const persistentCarId = existingCarId || formData.carId || Date.now().toString();
+
     await addCar({
-      schemaData: updatedSchemaData,
+      schemaData: {
+        ...updatedSchemaData,
+        carId: persistentCarId,
+      },
       ownerId: user.uid,
       status: "pending",
       createdAt: new Date().toISOString(),
-      tempId: formData.tempId || null,
-    });
+    }, persistentCarId);
 
     alert("✅ Anunț adăugat cu succes!");
     router.push("/dashboard/cars");
@@ -486,7 +497,8 @@ export default function DynamicCarForm({ initialData = {}, onSubmit }: Props) {
                               method: "POST",
                               headers: { "Content-Type": "application/json" },
                               body: JSON.stringify({
-                                filePath: fileToDelete.src,
+                                publicId: fileToDelete.public_id,
+                                resourceType: fileToDelete.resource_type || "raw",
                               }),
                             });
 

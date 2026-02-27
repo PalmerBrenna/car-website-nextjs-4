@@ -1,8 +1,6 @@
-// app/api/delete-car/route.ts
 import { NextResponse } from "next/server";
-import path from "path";
-import { promises as fs } from "fs";
 import { adminDb } from "@/lib/firebaseAdmin";
+import { deleteCloudinaryAsset, extractCloudinaryPublicId } from "@/lib/cloudinary";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,67 +9,61 @@ type DeleteCarBody = {
   filesToDelete?: string[];
 };
 
+type CloudinaryAsset = {
+  publicId: string;
+  resourceType: "image" | "raw";
+};
+
 const filterFilesToDelete = (files: unknown): string[] =>
   Array.isArray(files) ? files.filter((file): file is string => typeof file === "string") : [];
 
-const buildFilesToDeleteFromSchema = (schemaData: Record<string, any>) => {
-  const files: string[] = [];
+const buildAssetsToDeleteFromSchema = (schemaData: Record<string, any>) => {
+  const assets: CloudinaryAsset[] = [];
 
   for (const section of Object.values(schemaData)) {
     if (!section || typeof section !== "object") continue;
 
     if (Array.isArray(section.images)) {
       section.images.forEach((img: any) => {
-        if (img?.src) files.push(img.src);
+        const publicId = img?.public_id || extractCloudinaryPublicId(img?.src);
+        if (publicId) assets.push({ publicId, resourceType: "image" });
       });
     }
 
     if (Array.isArray(section.files)) {
       section.files.forEach((file: any) => {
-        if (file?.src) files.push(file.src);
+        const publicId = file?.public_id || extractCloudinaryPublicId(file?.src);
+        if (publicId) {
+          const resourceType = file?.resource_type === "raw" ? "raw" : "image";
+          assets.push({ publicId, resourceType });
+        }
       });
     }
   }
 
-  return files;
+  return assets;
 };
 
-const getUploadRelativePath = (value: string) => {
-  if (!value.includes("/uploads/")) return null;
+const parseBodyAssets = (values: string[]): CloudinaryAsset[] =>
+  values
+    .map((value) => extractCloudinaryPublicId(value))
+    .filter((publicId): publicId is string => Boolean(publicId))
+    .map((publicId) => ({ publicId, resourceType: "image" }));
 
-  const relativePath = value.split("/uploads/")[1]?.split("?")[0]?.split("#")[0];
-  if (!relativePath) return null;
+const deleteCloudinaryAssets = async (assets: CloudinaryAsset[]) => {
+  const uniqueAssets = Array.from(
+    new Map(assets.map((asset) => [`${asset.resourceType}:${asset.publicId}`, asset])).values()
+  );
 
-  return relativePath.replace(/^\/+/, "");
-};
-
-const deleteLocalUploads = async (carId: string, filesToDelete: string[]) => {
-  const foldersToRemove = new Set<string>([carId]);
-
-  for (const url of filesToDelete) {
+  for (const asset of uniqueAssets) {
     try {
-      const relativePath = getUploadRelativePath(url);
-      if (!relativePath) {
-        continue;
-      }
-
-      const folderName = relativePath.split("/")[0];
-      if (folderName && folderName !== "pages") {
-        foldersToRemove.add(folderName);
-      }
-
-      const absolutePath = path.join(process.cwd(), "public", "uploads", relativePath);
-
-      await fs.unlink(absolutePath);
-      console.log("🗑️ Deleted:", absolutePath);
-    } catch (err) {
-      console.error("⚠️ Failed to delete:", url, err);
+      await deleteCloudinaryAsset({
+        publicId: asset.publicId,
+        resourceType: asset.resourceType,
+      });
+    } catch (error) {
+      console.error("⚠️ Failed to delete Cloudinary asset", asset.publicId, error);
     }
-  }
-
-  for (const folderName of foldersToRemove) {
-    const folderPath = path.join(process.cwd(), "public", "uploads", folderName);
-    await fs.rm(folderPath, { recursive: true, force: true });
   }
 };
 
@@ -101,21 +93,10 @@ export async function DELETE(req: Request) {
     }
 
     if (!adminDb) {
-      if (bodyFiles.length === 0) {
-        return NextResponse.json(
-          {
-            error:
-              "Firestore admin client not configured and no files provided for deletion",
-          },
-          { status: 500 }
-        );
-      }
-
-      await deleteLocalUploads(carId, bodyFiles);
+      await deleteCloudinaryAssets(parseBodyAssets(bodyFiles));
       return NextResponse.json({ success: true, firestoreDeleted: false });
     }
 
-    // 🔹 Citește documentul Firestore
     const carRef = adminDb.collection("cars").doc(carId);
     let snap;
 
@@ -126,8 +107,8 @@ export async function DELETE(req: Request) {
         throw error;
       }
 
-      console.warn("⚠️ Firestore admin auth failed. Falling back to client-side doc deletion.");
-      await deleteLocalUploads(carId, bodyFiles);
+      console.warn("⚠️ Firestore admin auth failed. Falling back to request payload deletion.");
+      await deleteCloudinaryAssets(parseBodyAssets(bodyFiles));
       return NextResponse.json({ success: true, firestoreDeleted: false });
     }
 
@@ -137,15 +118,11 @@ export async function DELETE(req: Request) {
 
     const carData = snap.data();
     const schemaData = carData?.schemaData || {};
-    const schemaFiles = buildFilesToDeleteFromSchema(schemaData);
-    const filesToDelete = Array.from(new Set([...schemaFiles, ...bodyFiles]));
+    const schemaAssets = buildAssetsToDeleteFromSchema(schemaData);
+    const bodyAssets = parseBodyAssets(bodyFiles);
 
-    // 🔥 Ștergem toate fișierele locale din /public/uploads
-    await deleteLocalUploads(carId, filesToDelete);
-
-    // 🔹 Ștergem documentul Firestore
+    await deleteCloudinaryAssets([...schemaAssets, ...bodyAssets]);
     await carRef.delete();
-    console.log("✅ Firestore doc deleted:", carId);
 
     return NextResponse.json({ success: true, firestoreDeleted: true });
   } catch (err: any) {
