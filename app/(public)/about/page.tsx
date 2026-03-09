@@ -113,152 +113,140 @@ export default function AboutPage() {
   };
 
   return (
-    <section className="bg-white text-gray-800 py-12 px-6 min-h-screen">
-      <div className="max-w-6xl mx-auto space-y-16">
-        {/* 🏎️ Hero Section */}
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            {isEditing ? (
-              <textarea
-                value={content.heroTitle}
-                onChange={(e) =>
-                  setContent({ ...content, heroTitle: e.target.value })
-                }
-                className="w-full text-3xl font-bold border border-gray-300 p-2 mb-2 rounded"
-              />
-            ) : (
-              <h1 className="text-3xl md:text-4xl font-extrabold uppercase leading-tight mb-4 text-gray-900">
-                {content.heroTitle}
-              </h1>
-            )}
+    <section className="bg-[#f4f4f4] text-gray-800 min-h-screen">
+      <div className="max-w-[1500px] mx-auto py-8 px-4 lg:px-8 space-y-20">
+        <div className="relative rounded-[30px] overflow-hidden min-h-[620px] text-white">
+          <Image
+            src={content.heroImage}
+            alt="About hero"
+            fill
+            sizes="100vw"
+            className="object-cover"
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-black/60" />
+
+          <div className="relative z-10 max-w-5xl mx-auto px-6 pt-14 pb-16 text-center">
+            <h1 className="text-4xl md:text-6xl font-semibold uppercase leading-tight">
+              Redefining Luxury with
+              <span className="block text-[#e9c46a] italic normal-case font-normal">
+                HGreg Lux
+              </span>
+            </h1>
 
             {isEditing ? (
               <textarea
                 value={content.heroText}
-                onChange={(e) =>
-                  setContent({ ...content, heroText: e.target.value })
-                }
-                className="w-full border border-gray-300 p-3 text-gray-700 rounded"
+                onChange={(e) => setContent({ ...content, heroText: e.target.value })}
+                className="w-full mt-5 bg-black/20 border border-white/30 p-3 rounded text-center"
               />
             ) : (
-              <p className="text-gray-700 mb-6 leading-relaxed">
+              <p className="max-w-3xl mx-auto mt-5 text-gray-100">
                 {content.heroText}
               </p>
             )}
 
-            <div className="flex flex-wrap gap-3">
-              {content.heroButtons.map((btn, i) =>
-                isEditing ? (
-                  <input
-                    key={i}
-                    type="text"
-                    value={btn.text}
-                    onChange={(e) => {
-                      const buttons = [...content.heroButtons];
-                      buttons[i].text = e.target.value;
-                      setContent({ ...content, heroButtons: buttons });
-                    }}
-                    className="border border-gray-300 px-3 py-2 rounded text-sm text-gray-700"
-                  />
-                ) : (
-                  <button
-  key={i}
-  onClick={() => {
-    if (btn.text.toUpperCase() === "CONTACT US") {
-      setContactOpen(true);
-    } else {
-      window.location.href = btn.link;
-    }
-  }}
-  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded font-semibold text-sm transition"
->
-  {btn.text}
-</button>
-
-                )
-              )}
-            </div>
-          </div>
-
-          <div className="relative w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-md">
-            <Image
-              src={content.heroImage}
-              alt="Hero"
-              fill
-              sizes="100vw"
-              className="object-cover"
-              unoptimized
-            />
             {isEditing && (
               <input
                 type="file"
-                onChange={(e) =>
-                  handleImageUpload("heroImage", e.target.files?.[0] || null)
-                }
-                className="absolute bottom-2 left-2 text-xs bg-white/80 p-1 rounded"
+                onChange={(e) => handleImageUpload("heroImage", e.target.files?.[0] || null)}
+                className="mt-4 text-xs bg-white/90 text-black p-1 rounded"
               />
             )}
+
+            <div className="mt-10 grid md:grid-cols-2 gap-4 text-left">
+              {[
+                ["HGreg Lux Pompano Beach", "2500 West Sample Rd, Pompano Beach, FL, 33073"],
+                ["HGreg Lux West Palm Beach", "551 S Military Trl, Building 3, West Palm Beach, FL, 33415"],
+                ["HGreg Lux Costa Mesa", "2115 Harbor Blvd, Costa Mesa, CA, 92627"],
+                ["HGreg Lux Miami", "17305 S. Dixie Hwy, Miami, FL 33157"],
+                ["HGreg Lux Orlando", "2510 Jetport Dr, Suite B, Orlando, FL 32809"],
+                ["HGreg Lux Doral", "8505 NW 12th, Doral, FL 33126"],
+                ["HGreg Lux Houston (Coming Soon)", "6737 Southwest Fwy, Houston, TX 77074"],
+              ].map(([title, address]) => (
+                <div
+                  key={title}
+                  className="flex items-center gap-4 bg-black/35 border border-[#e9c46a]/50 rounded-2xl px-5 py-3"
+                >
+                  <div className="w-9 h-9 rounded-full border border-[#e9c46a] flex items-center justify-center text-[#e9c46a] text-sm">
+                    ●
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg leading-tight">{title}</h3>
+                    <p className="text-sm text-gray-200">{address}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* 🏁 Section 2 */}
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div className="relative w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-md">
-            <Image
-              src={content.section2Image}
-              alt="About image"
-              fill
-              sizes="100vw"
-              className="object-cover"
-              unoptimized
-            />
-            {isEditing && (
-              <input
-                type="file"
-                onChange={(e) =>
-                  handleImageUpload("section2Image", e.target.files?.[0] || null)
-                }
-                className="absolute bottom-2 left-2 text-xs bg-white/80 p-1 rounded"
+        <div className="max-w-6xl mx-auto space-y-10">
+          <h2 className="text-5xl text-center font-semibold leading-tight text-[#272846]">
+            At <span className="text-[#e9c46a] italic font-normal">HGreg Lux</span>, we&apos;ve decided to redefine the status quo and
+            <span className="text-[#e9c46a] italic font-normal"> do things differently</span>
+          </h2>
+
+          <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-10 items-center">
+            <ul className="border-l-4 border-[#e9c46a] pl-8 space-y-8 text-4xl">
+              {[
+                "The Lux Process",
+                "Trust in our Expertise",
+                "Join the Innovation",
+              ].map((item, idx) => (
+                <li key={item} className="flex items-center gap-6 text-black">
+                  <span className="text-4xl text-gray-400">{`0${idx + 1}`}</span>
+                  <span className="text-4xl">{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="relative h-[560px] rounded-[28px] overflow-hidden">
+              <Image
+                src={content.section2Image}
+                alt="About gallery"
+                fill
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="object-cover"
+                unoptimized
               />
-            )}
+              {isEditing && (
+                <input
+                  type="file"
+                  onChange={(e) => handleImageUpload("section2Image", e.target.files?.[0] || null)}
+                  className="absolute bottom-2 left-2 text-xs bg-white/90 p-1 rounded"
+                />
+              )}
+            </div>
           </div>
+        </div>
 
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {content.section2Title}
-            </h2>
-            {isEditing ? (
-              <textarea
-                value={content.section2Text}
-                onChange={(e) =>
-                  setContent({ ...content, section2Text: e.target.value })
-                }
-                className="w-full border border-gray-300 p-3 text-gray-700 rounded mb-4"
-              />
-            ) : (
-              <p className="text-gray-700 mb-6 leading-relaxed">
-                {content.section2Text}
-              </p>
-            )}
+        <div className="max-w-6xl mx-auto text-center">
+          <h3 className="text-6xl font-semibold text-[#272846]">
+            Indulge every step of
+            <span className="text-[#e9c46a] italic font-normal"> the way</span>
+          </h3>
+          <p className="max-w-4xl mx-auto mt-4 text-xl text-gray-700 leading-relaxed">
+            We are enthusiastic to be part of the journey to find the craftsmanship you admire, and the qualities you desire, in your next luxury vehicle. At HGreg Lux, we believe helping you invest in a luxury vehicle requires superior expertise as well as genuine commitment, and our team is the ideal embodiment of what our company stands for.
+          </p>
+          <button
+            onClick={() => (content.heroButtons[1]?.link ? (window.location.href = content.heroButtons[1].link) : undefined)}
+            className="mt-6 bg-[#f3bf1f] hover:bg-[#e4af11] text-black font-semibold rounded-full px-10 py-4 transition"
+          >
+            Find your car
+          </button>
 
-            {isEditing ? (
-              <textarea
-                value={content.section2Quote}
-                onChange={(e) =>
-                  setContent({ ...content, section2Quote: e.target.value })
-                }
-                className="w-full border border-gray-300 p-3 italic text-gray-600 rounded"
-              />
-            ) : (
-              <blockquote className="text-gray-600 italic border-l-4 border-blue-500 pl-4 bg-blue-50/40 py-2 px-3 rounded">
-                “{content.section2Quote}”
-              </blockquote>
-            )}
+          <div className="mt-10 grid md:grid-cols-3 gap-8">
+            {["/images/hero-consign.jpg", "/images/hero-listings.jpg", "/images/hero-vintage.jpg"].map((img) => (
+              <div key={img} className="relative rounded-3xl overflow-hidden h-[420px]">
+                <Image src={img} alt="Luxury inventory" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" unoptimized />
+              </div>
+            ))}
           </div>
         </div>
 
         {/* 👥 Team Section */}
-<div className="bg-gray-50 rounded-xl p-8 border border-gray-200">
+<div className="bg-[#f4f4f4] rounded-xl p-8 border border-gray-200">
   <div className="flex items-center justify-between mb-8">
     <h2 className="text-3xl font-bold text-gray-900">
       {content.teamTitle}
