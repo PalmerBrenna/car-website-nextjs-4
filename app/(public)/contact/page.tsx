@@ -72,142 +72,130 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="bg-white text-gray-800 min-h-screen">
-      {/* ---------- HERO SECTION ---------- */}
-      <section className="relative w-full h-[45vh] min-h-[420px]">
+    <main className="bg-[#f4f4f4] text-gray-800 min-h-screen pb-16">
+      <section className="relative w-full min-h-[460px] md:min-h-[560px] overflow-hidden">
         <Image
-          src="/images/hero-contact.jpg" // 👉 pune aici imaginea ta (ex: assets/hero-contact.jpg)
-          alt="Contact Dariella Motors"
+          src="https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=1900&q=80"
+          alt="Luxury contact hero"
           fill
           sizes="100vw"
           priority
           className="object-cover"
           unoptimized
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 drop-shadow-md">
-            Get in Touch with Us
+        <div className="absolute inset-0 bg-black/55" />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-28 pb-20 text-center text-white">
+          <h1 className="text-5xl md:text-7xl font-semibold leading-tight">
+            Get in Touch
+            <span className="block italic text-[#e9c46a] font-normal">with HGreg Lux</span>
           </h1>
-          <p className="mt-3 text-gray-700 max-w-2xl mx-auto">
-            Have questions about a car, financing, or selling your vehicle?
-            We’re happy to help.
+          <p className="mt-5 text-lg text-gray-100 max-w-3xl mx-auto leading-relaxed">
+            Have questions about a car, financing, or selling your vehicle? Our team is here to help with a seamless luxury experience.
           </p>
+
+          <div className="mt-10 grid md:grid-cols-3 gap-4 text-left">
+            <div className="bg-black/35 border border-[#e9c46a]/50 rounded-2xl p-5">
+              <p className="text-[#e9c46a] text-sm uppercase tracking-wider">Visit</p>
+              <p className="mt-2 text-white/95">{content.address || "Add address from edit mode"}</p>
+            </div>
+            <div className="bg-black/35 border border-[#e9c46a]/50 rounded-2xl p-5">
+              <p className="text-[#e9c46a] text-sm uppercase tracking-wider">Call</p>
+              <p className="mt-2 text-white/95">{content.phone || "Add phone from edit mode"}</p>
+            </div>
+            <div className="bg-black/35 border border-[#e9c46a]/50 rounded-2xl p-5">
+              <p className="text-[#e9c46a] text-sm uppercase tracking-wider">Email</p>
+              <p className="mt-2 text-white/95 break-all">{content.email}</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ---------- CONTACT CONTENT ---------- */}
-      <section className="py-16 px-6 md:px-8 max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-10">
-          {isEditing ? (
-            <input
-              type="text"
-              value={content.title}
-              onChange={(e) =>
-                setContent({ ...content, title: e.target.value })
-              }
-              className="text-4xl font-bold border-b border-gray-300 focus:outline-none"
-            />
-          ) : (
-            <h2 className="text-4xl font-extrabold text-gray-900">
-              {content.title}
-            </h2>
-          )}
-
-          {role === "superadmin" && (
-            <button
-              onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold transition ${
-                isEditing
-                  ? "bg-green-600 hover:bg-green-700 text-white"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-              }`}
-            >
-              {isEditing ? "💾 Save Changes" : "✏️ Edit Page"}
-            </button>
-          )}
-        </div>
-
-        {/* Grid layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          {/* LEFT column */}
-          <div>
+      <section className="max-w-6xl mx-auto px-6 -mt-16 relative z-20">
+        <div className="bg-white rounded-[30px] shadow-xl border border-gray-200 p-6 md:p-10">
+          <div className="flex justify-between items-center mb-8">
             {isEditing ? (
-              <textarea
-                value={content.intro}
-                onChange={(e) =>
-                  setContent({ ...content, intro: e.target.value })
-                }
-                className="w-full border border-gray-300 rounded-lg p-3 mb-6 h-40 resize-none"
+              <input
+                type="text"
+                value={content.title}
+                onChange={(e) => setContent({ ...content, title: e.target.value })}
+                className="text-3xl md:text-4xl font-semibold border-b border-gray-300 focus:outline-none w-full max-w-sm"
               />
             ) : (
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                {content.intro}
-              </p>
+              <h2 className="text-4xl md:text-5xl font-semibold text-[#272846]">
+                {content.title}
+              </h2>
             )}
 
-            {/* INFO blocks */}
-            <div className="space-y-6">
-              {/* Address */}
-              <div>
-                <h3 className="font-semibold text-gray-900 uppercase text-sm mb-1">
-                  Sale office
-                </h3>
-                {isEditing ? (
-                  <input
-                    value={content.address}
-                    onChange={(e) =>
-                      setContent({ ...content, address: e.target.value })
-                    }
-                    className="w-full border border-gray-300 rounded p-2"
-                  />
-                ) : (
-                  <p>{content.address}</p>
-                )}
-              </div>
+            {role === "superadmin" && (
+              <button
+                onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+                className={`px-5 py-2 rounded-lg text-sm font-semibold transition ${
+                  isEditing
+                    ? "bg-green-600 hover:bg-green-700 text-white"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                }`}
+              >
+                {isEditing ? "💾 Save Changes" : "✏️ Edit Page"}
+              </button>
+            )}
+          </div>
 
-              {/* Contact Info */}
-              <div>
-                <h3 className="font-semibold text-gray-900 uppercase text-sm mb-1">
-                  How to Reach Us
-                </h3>
-                {isEditing ? (
-                  <>
+          <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-10 items-start">
+            <div className="space-y-8">
+              {isEditing ? (
+                <textarea
+                  value={content.intro}
+                  onChange={(e) => setContent({ ...content, intro: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg p-3 h-32 resize-none"
+                />
+              ) : (
+                <p className="text-lg text-gray-600 leading-relaxed">{content.intro}</p>
+              )}
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="rounded-2xl border border-gray-200 p-4 bg-[#f8f8f8]">
+                  <h3 className="text-sm font-semibold uppercase text-gray-900 mb-2">Sale Office</h3>
+                  {isEditing ? (
                     <input
-                      value={content.phone}
-                      onChange={(e) =>
-                        setContent({ ...content, phone: e.target.value })
-                      }
-                      className="w-full border border-gray-300 rounded p-2 mb-2"
-                    />
-                    <input
-                      value={content.email}
-                      onChange={(e) =>
-                        setContent({ ...content, email: e.target.value })
-                      }
+                      value={content.address}
+                      onChange={(e) => setContent({ ...content, address: e.target.value })}
                       className="w-full border border-gray-300 rounded p-2"
                     />
-                  </>
-                ) : (
-                  <>
-                    <p className="font-medium">{content.phone}</p>
-                    <p className="text-blue-600">{content.email}</p>
-                  </>
-                )}
+                  ) : (
+                    <p className="text-gray-700">{content.address}</p>
+                  )}
+                </div>
+
+                <div className="rounded-2xl border border-gray-200 p-4 bg-[#f8f8f8]">
+                  <h3 className="text-sm font-semibold uppercase text-gray-900 mb-2">How to Reach Us</h3>
+                  {isEditing ? (
+                    <>
+                      <input
+                        value={content.phone}
+                        onChange={(e) => setContent({ ...content, phone: e.target.value })}
+                        className="w-full border border-gray-300 rounded p-2 mb-2"
+                      />
+                      <input
+                        value={content.email}
+                        onChange={(e) => setContent({ ...content, email: e.target.value })}
+                        className="w-full border border-gray-300 rounded p-2"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-medium text-gray-800">{content.phone}</p>
+                      <p className="text-blue-600 break-all">{content.email}</p>
+                    </>
+                  )}
+                </div>
               </div>
 
-              {/* Hours */}
               <div>
-                <h3 className="font-semibold text-gray-900 uppercase text-sm mb-2">
-                  Hours
-                </h3>
-                <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
+                <h3 className="font-semibold text-gray-900 uppercase text-sm mb-3">Hours</h3>
+                <div className="border border-gray-200 rounded-2xl divide-y divide-gray-100 overflow-hidden bg-white">
                   {Object.entries(content.hours).map(([day, hours]) => (
-                    <div
-                      key={day}
-                      className="flex justify-between py-2 px-3 text-sm"
-                    >
+                    <div key={day} className="flex justify-between py-3 px-4 text-sm">
                       <span className="font-medium">{day}</span>
                       {isEditing ? (
                         <input
@@ -230,48 +218,53 @@ export default function ContactPage() {
                   ))}
                 </div>
               </div>
+
+              {!isEditing && content.phone && (
+                <button
+                  onClick={openWhatsApp}
+                  className="bg-[#f3bf1f] hover:bg-[#e2af18] px-7 py-3 rounded-full text-black font-semibold transition"
+                >
+                  Contact Us on WhatsApp
+                </button>
+              )}
             </div>
 
-            {/* WhatsApp Button */}
-           {/* {!isEditing && (
-              <button
-                onClick={openWhatsApp}
-                className="mt-8 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full text-white font-semibold transition"
-              >
-                Contact Us
-              </button>
-            )} */}
+            <div className="space-y-5">
+              <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+                {isEditing ? (
+                  <textarea
+                    value={content.mapEmbed}
+                    onChange={(e) => setContent({ ...content, mapEmbed: e.target.value })}
+                    className="w-full h-[420px] border-0 p-3"
+                  />
+                ) : (
+                  <iframe
+                    src={content.mapEmbed}
+                    width="100%"
+                    height="420"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                  ></iframe>
+                )}
+              </div>
+
+              <div className="relative h-[210px] rounded-2xl overflow-hidden border border-gray-200">
+                <Image
+                  src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1400&q=80"
+                  alt="Luxury showroom"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-black/25" />
+              </div>
+            </div>
           </div>
 
-          {/* RIGHT column: Map */}
-          <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200">
-            {isEditing ? (
-              <textarea
-                value={content.mapEmbed}
-                onChange={(e) =>
-                  setContent({ ...content, mapEmbed: e.target.value })
-                }
-                className="w-full h-64 border border-gray-300 p-2 rounded-lg"
-              />
-            ) : (
-              <iframe
-                src={content.mapEmbed}
-                width="100%"
-                height="400"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-              ></iframe>
-            )}
-          </div>
+          {status && <p className="mt-6 text-green-600 font-medium text-center">{status}</p>}
         </div>
-
-        {/* Status Message */}
-        {status && (
-          <p className="mt-6 text-green-600 font-medium text-center">
-            {status}
-          </p>
-        )}
       </section>
     </main>
   );

@@ -240,6 +240,105 @@ export default function FinancePage() {
         )}
       </div>
 
+      <div className="max-w-6xl mx-auto px-6 pb-20 space-y-20">
+        <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-center">
+          <div className="relative w-full min-h-[300px] h-[420px] rounded-[28px] overflow-hidden">
+            <Image
+              src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1400&q=80"
+              alt="Luxury vehicles showroom"
+              fill
+              sizes="(max-width: 1024px) 100vw, 55vw"
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+
+          <div>
+            <h3 className="text-4xl md:text-5xl font-semibold leading-tight text-[#171a36]">
+              HGreg Lux Exclusively
+              <span className="block text-[#d7b15d] italic font-normal mt-1">
+                Low Rates
+              </span>
+            </h3>
+            <p className="text-gray-600 mt-6 leading-relaxed text-lg">
+              It&apos;s no secret, our success in the industry gives us the
+              benefits of incredibly low interest rates for those looking to
+              finance their luxury vehicle. At HGreg Lux, when you&apos;re one click
+              away from getting the best rates on the market, nothing will stop
+              you from driving home your dream car.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-10 items-center">
+          <div>
+            <h3 className="text-5xl font-semibold leading-tight text-[#171a36]">
+              We&apos;ve got you
+              <span className="text-[#d7b15d] italic font-normal ml-3">
+                covered
+              </span>
+            </h3>
+            <p className="text-gray-500 mt-4">A sound investment.</p>
+            <p className="text-gray-600 mt-4 leading-relaxed">
+              There is no need to take chances with your valued investment when
+              HGreg Lux offers a wide selection of warranty plans, catered to
+              your every need.
+            </p>
+
+            <ul className="mt-6 space-y-3 text-gray-800">
+              {[
+                "Day One, Mile One Coverage",
+                "Nationwide Service Facilities",
+                "24/7 Roadside Assistance & Towing",
+                "Exceptional Claims Service",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-[#d7b15d] text-[#d7b15d] text-xs">
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="relative rounded-[28px] overflow-hidden min-h-[320px] h-[460px]">
+            <Image
+              src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80"
+              alt="Performance car coverage"
+              fill
+              sizes="(max-width: 1024px) 100vw, 55vw"
+              className="object-cover"
+              unoptimized
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-transparent" />
+
+            <div className="absolute top-8 left-8 right-8 text-white">
+              <h4 className="text-3xl font-semibold mb-4">Parts covered include:</h4>
+              <div className="grid sm:grid-cols-2 gap-2 text-sm md:text-base">
+                {[
+                  "Suspension",
+                  "Brake System",
+                  "Air Conditioning",
+                  "Transmission/Transfer Case",
+                  "Drive Axle",
+                  "Engine",
+                  "Steering",
+                  "Electrical",
+                  "Seals & Gaskets",
+                  "High Tech",
+                ].map((part) => (
+                  <div key={part} className="flex items-center gap-2">
+                    <span className="text-[#d7b15d]">✓</span>
+                    <span>{part}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ⭐ Benefits Section */}
      {/* <div className="bg-gray-50 py-16">
         <div className="max-w-6xl mx-auto text-center">
@@ -397,6 +496,40 @@ export default function FinancePage() {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 pb-24">
+        <div className="relative rounded-[30px] overflow-hidden min-h-[300px] md:min-h-[360px] flex items-center justify-center text-center px-8">
+          <Image
+            src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1800&q=80"
+            alt="Finance luxury vehicle"
+            fill
+            sizes="100vw"
+            className="object-cover"
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-black/55" />
+
+          <div className="relative z-10 max-w-3xl text-white">
+            <h3 className="text-4xl md:text-6xl font-semibold mb-4">
+              Finance my
+              <span className="text-[#d7b15d] italic font-normal ml-3">
+                Luxury Vehicle
+              </span>
+            </h3>
+            <p className="text-sm md:text-lg text-gray-200 mb-8">
+              Whether you&apos;re looking to purchase, or finance your next vehicle
+              from HGreg Lux, our simple online financing form takes only a few
+              minutes to fill out, and a response will be sent shortly!
+            </p>
+            <a
+              href="#"
+              className="inline-flex items-center justify-center rounded-full border border-[#d7b15d] text-[#f2c764] font-semibold px-10 py-3 hover:bg-[#d7b15d]/10 transition"
+            >
+              Apply Now
+            </a>
+          </div>
+        </div>
       </div>
 
       {/* 🧭 Admin Controls */}
