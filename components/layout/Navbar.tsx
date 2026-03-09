@@ -29,7 +29,7 @@ export default function Navbar() {
   const navLinks = [
     { href: "/listings", label: "Find Your Car" },
     { href: "/consign", label: "Consignment" },
-    { href: "/sold", label: "Sell or Trade" },
+    { href: "/sold", label: "Sold Vehicles" },
     { href: "/finance", label: "Financing" },
     { href: "/about", label: "About Us" },
     { href: "/contact", label: "Contact Us" },
