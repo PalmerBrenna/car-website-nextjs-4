@@ -31,7 +31,8 @@ export default function FinancePage() {
   const defaultData: FinanceData = {
     heroImage: "/images/hero-finance.jpg",
     title: "FINANCE",
-    subtitle: "Don't allow your aspirations to be hindered by financial constraints.",
+    subtitle:
+      "Don't allow your aspirations to be hindered by financial constraints.",
     description:
       "You have the power and the control thru hours financing partners or others of your choice, to find the best solution that sadisfied you and your needs. We are here to help finding the best solution and the Instant promise for tayloring for You a Exclusive offer Proven and Guaranteed Saving money solution from our part.",
     benefitsTitle: "Why Finance With Us?",
@@ -124,7 +125,7 @@ export default function FinancePage() {
   const handlePartnerUpload = async (
     rowIndex: number,
     colIndex: number,
-    file: File | null
+    file: File | null,
   ) => {
     const url = await uploadImage(file);
     if (!url) return;
@@ -340,7 +341,7 @@ export default function FinancePage() {
       </div>
 
       {/* ⭐ Benefits Section */}
-     {/* <div className="bg-gray-50 py-16">
+      {/* <div className="bg-gray-50 py-16">
         <div className="max-w-6xl mx-auto text-center">
           {isEditing ? (
             <input
@@ -429,7 +430,7 @@ export default function FinancePage() {
                           handlePartnerUpload(
                             rowIndex,
                             colIndex,
-                            e.target.files?.[0] || null
+                            e.target.files?.[0] || null,
                           )
                         }
                         className="absolute bottom-2 left-2 text-xs bg-white/80 p-1 rounded"
