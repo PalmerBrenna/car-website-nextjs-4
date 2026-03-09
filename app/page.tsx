@@ -1,5 +1,7 @@
 "use client";
+
 export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,11 +9,9 @@ import { getCars } from "@/lib/firestore";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getUserRole } from "@/lib/auth";
-import CarCard from "@/components/car/CarCard";
 import type { Car } from "@/lib/types";
-import { Gauge, ShieldCheck, Wallet, Truck } from "lucide-react";
-//
-/* ---------- helpers ---------- */
+import { CarFront, Handshake, ShieldCheck, Search, Phone } from "lucide-react";
+
 function findValue(schemaData: any, key: string) {
   if (!schemaData || typeof schemaData !== "object") return undefined;
   const needle = key.trim().toLowerCase();
@@ -36,106 +36,31 @@ function getFeaturedImage(car: any): string {
     }
   }
 
-  const legacy = car?.images?.exterior?.[0];
-  return legacy || "/images/placeholder-car.jpg";
+  return car?.images?.exterior?.[0] || "/images/hero-listings.jpg";
 }
 
-/* ---------- listing card ---------- */
-function ListingCard({ car }: { car: Car }) {
-  const title =
-    findValue(car.schemaData, "Title") ||
-    findValue(car.schemaData, "Titlu") ||
-    "Untitled";
-
-  const year =
-    findValue(car.schemaData, "Year") ||
-    findValue(car.schemaData, "An fabricație") ||
-    "";
-
-  const mileage =
-    findValue(car.schemaData, "Mileage") ||
-    findValue(car.schemaData, "Kilometraj") ||
-    "";
-
-  const price =
-    findValue(car.schemaData, "Price") ||
-    findValue(car.schemaData, "Preț") ||
-    car.price;
-
-  const img = getFeaturedImage(car);
-
-  return (
-    <Link
-      href={`/listings/${car.id}`}
-      className="group block rounded-xl border border-gray-200 bg-white hover:shadow-lg transition overflow-hidden"
-    >
-      <div className="relative h-48 w-full">
-        <Image
-          src={img}
-          alt={typeof title === "string" ? title : "Car"}
-          fill
-          sizes="100vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-          //unoptimized
-        />
-        {car.status && (
-          <span
-            className={`absolute left-3 top-3 rounded px-2 py-1 text-[11px] font-semibold text-white ${
-              car.status === "available"
-                ? "bg-green-600"
-                : car.status === "pending"
-                ? "bg-yellow-500"
-                : "bg-red-600"
-            }`}
-          >
-            {car.status.toUpperCase()}
-          </span>
-        )}
-      </div>
-
-      <div className="p-4">
-        <h3 className="line-clamp-1 text-lg font-semibold text-gray-900">
-          {typeof title === "string" ? title : "Listing"}
-        </h3>
-        <p className="mt-1 text-sm text-gray-500">
-          {year || "—"} • {mileage ? `${mileage} mileage` : "—"}
-        </p>
-        <p className="mt-2 text-xl font-bold text-blue-600">
-          {price ? `${Number(price).toLocaleString()} $` : "—"}
-        </p>
-      </div>
-    </Link>
-  );
-}
-
-/* ---------- main page ---------- */
 export default function HomePage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [status, setStatus] = useState("");
-
   const [content, setContent] = useState({
-    heroSubtitle: "Imagine Discovering with us your Revolutionary dream car .",
-    heroTitle: "We are your new, proven and guaranteed dealer, offering limited exclusive instant results for unique offers.",
-    heroText:
-      "",
+    heroSubtitle: "EXOTIC LUXURY CARS",
+    heroTitle: "FOR SALE",
+    heroText: "Quick search our inventory by Stock, Make or Model",
     heroImage: "/images/hero-vintage.jpg",
-    cta1: "Browse All Listings",
-    cta2: "Consign Now",
-    bannerTitle: "Got a car to sell or consign?",
-    bannerText: "We make it easy—photography, paperwork, nationwide buyers.",
+    cta1: "Browse our Inventory",
+    cta2: "Consign with us",
+    bannerTitle: "See what people have to say about us",
+    bannerText: "Trusted by buyers and sellers nationwide.",
   });
 
-  // 🔹 Filtrăm mașinile — excludem cele cu status "sold", "pending" sau "rejected"
   const visibleCars = cars.filter(
     (car) =>
-      car.status &&
-      !["sold", "pending", "rejected","draft"].includes(car.status.toLowerCase())
+      car.status && !["sold", "pending", "rejected", "draft"].includes(car.status.toLowerCase())
   );
 
-  /* ---------- Load data ---------- */
   useEffect(() => {
     (async () => {
       const r = await getUserRole();
@@ -143,7 +68,7 @@ export default function HomePage() {
 
       const docRef = doc(db, "pages", "home");
       const snap = await getDoc(docRef, { source: "server" });
-      if (snap.exists()) setContent(snap.data() as any);
+      if (snap.exists()) setContent((prev) => ({ ...prev, ...(snap.data() as any) }));
       else await setDoc(docRef, content);
 
       try {
@@ -157,11 +82,9 @@ export default function HomePage() {
     })();
   }, []);
 
-  /* ---------- Save changes ---------- */
   const handleSave = async () => {
     try {
-      const docRef = doc(db, "pages", "home");
-      await updateDoc(docRef, content);
+      await updateDoc(doc(db, "pages", "home"), content);
       setIsEditing(false);
       setStatus("✅ Homepage updated successfully!");
       setTimeout(() => setStatus(""), 3000);
@@ -170,245 +93,149 @@ export default function HomePage() {
     }
   };
 
-  /* ---------- Upload image ---------- */
   const handleImageUpload = async (file: File | null) => {
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folderType", "main");
-    const res = await fetch("/api/upload-page", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await fetch("/api/upload-page", { method: "POST", body: formData });
     const data = await res.json();
     if (data.url) setContent((prev) => ({ ...prev, heroImage: data.url }));
   };
 
+  const featured = visibleCars.slice(0, 6);
+
+  const brands = ["BMW", "PORSCHE", "FERRARI", "LAMBORGHINI", "RANGE ROVER", "MASERATI"];
+
+  const showroomCards = [
+    { city: "Orlando", address: "2510 Jetport Dr, Suite B", phone: "407 680 1635", image: "/public-showroom-orlando.jpg" },
+    { city: "Pompano Beach", address: "2500 West Sample Rd", phone: "754-318-9003", image: "/public-showroom-pompano.jpg" },
+    { city: "Miami", address: "17305 S Dixie Hwy", phone: "305-259-2638", image: "/public-showroom-miami.jpg" },
+  ];
+
   return (
-    <main className="min-h-screen bg-white text-gray-900">
-      {/* HERO */}
-      <section className="relative">
-        <div className="relative h-[54vh] min-h-[420px] w-full overflow-hidden">
-          <Image
-            src={content.heroImage}
-            alt="Vintage American Classics"
-            fill
-            sizes="100vw"
-            priority
-            className="object-cover"
-            //unoptimized
-          />
-          {isEditing && (
-            <input
-              type="file"
-              onChange={(e) => handleImageUpload(e.target.files?.[0] || null)}
-              className="absolute bottom-2 left-2 bg-white/80 text-xs"
-            />
+    <main className="bg-[#f3f3f3] text-[#1e2240]">
+      <section className="relative min-h-[760px] overflow-hidden">
+        <Image src={content.heroImage} alt="Hero" fill priority className="object-cover" />
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="relative mx-auto flex min-h-[760px] w-full max-w-[1280px] flex-col items-center px-4 pb-16 pt-28 text-center text-white">
+          {isEditing ? (
+            <div className="w-full max-w-3xl space-y-2 rounded-2xl bg-white/90 p-4 text-left text-black">
+              <input value={content.heroSubtitle} onChange={(e) => setContent({ ...content, heroSubtitle: e.target.value })} className="w-full rounded border p-2" />
+              <input value={content.heroTitle} onChange={(e) => setContent({ ...content, heroTitle: e.target.value })} className="w-full rounded border p-2" />
+              <input value={content.heroText} onChange={(e) => setContent({ ...content, heroText: e.target.value })} className="w-full rounded border p-2" />
+              <input type="file" onChange={(e) => handleImageUpload(e.target.files?.[0] || null)} className="w-full" />
+            </div>
+          ) : (
+            <>
+              <h1 className="text-5xl font-semibold uppercase tracking-wide md:text-7xl">{content.heroSubtitle}</h1>
+              <p className="mt-2 font-serif text-5xl italic text-[#f2c94c] md:text-6xl">{content.heroTitle}</p>
+              <div className="mt-8 flex w-full max-w-2xl items-center overflow-hidden rounded-full bg-white px-5 py-3 text-gray-500 shadow-xl">
+                <span className="flex-1 text-left">{content.heroText}</span>
+                <button className="rounded-full bg-[#f5c62d] p-3 text-black"><Search size={18} /></button>
+              </div>
+            </>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
-        </div>
 
-        <div className="container mx-auto -mt-28 px-4">
-          <div className="mx-auto max-w-7xl rounded-2xl border border-gray-200 bg-white/90 backdrop-blur p-8 shadow-sm">
-
-            {isEditing ? (
-              <>
-                <input
-                  value={content.heroSubtitle}
-                  onChange={(e) =>
-                    setContent({ ...content, heroSubtitle: e.target.value })
-                  }
-                  className="text-xs tracking-[0.2em] text-gray-500 w-full mb-2 border-b"
-                />
-                <textarea
-                  value={content.heroTitle}
-                  onChange={(e) =>
-                    setContent({ ...content, heroTitle: e.target.value })
-                  }
-                  className="w-full text-3xl font-extrabold leading-tight border p-2 rounded"
-                />
-                <textarea
-                  value={content.heroText}
-                  onChange={(e) =>
-                    setContent({ ...content, heroText: e.target.value })
-                  }
-                  className="w-full mt-2 text-gray-700 border p-2 rounded"
-                />
-              </>
-            ) : (
-              <>
-                <div className="text-center">
-  <p className="text-xs tracking-[0.2em] text-gray-500">
-    {content.heroSubtitle}
-  </p>
-  <h1 className="mt-2 text-3xl font-extrabold leading-tight md:text-4xl">
-    {content.heroTitle}
-  </h1>
-  <p className="mt-3 max-w-3xl mx-auto text-gray-600">
-    {content.heroText}
-  </p>
-</div>
-              </>
-            )}
-
-            <div className="mt-5 flex flex-wrap justify-center gap-3">
-  <Link
-    href="/listings"
-    className="rounded-full bg-blue-600 px-5 py-2.5 text-white font-semibold hover:bg-blue-700 transition"
-  >
-    {content.cta1}
-  </Link>
-  <Link
-    href="/consign"
-    className="rounded-full border border-gray-300 px-5 py-2.5 font-semibold text-gray-800 hover:border-blue-500 hover:text-blue-600 transition"
-  >
-    {content.cta2}
-  </Link>
-</div>
-
+          <div className="mt-14 grid w-full max-w-5xl grid-cols-2 gap-3 rounded-2xl bg-black/60 p-4 text-xs font-semibold uppercase tracking-wider backdrop-blur md:grid-cols-6">
+            {brands.map((brand) => (
+              <div key={brand} className="flex items-center justify-center text-white/90">{brand}</div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* BENEFITS */}
-      <section className="w-full flex justify-center px-4">
-  <div className="w-full max-w-6xl mt-12 grid gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:grid-cols-4">
-
-          <div className="flex items-start gap-3">
-            <ShieldCheck className="mt-0.5 h-6 w-6 text-blue-600" />
-            <div>
-              <p className="font-semibold">Verified Listings</p>
-              <p className="text-sm text-gray-600">
-                Quality cars, vetted by us
-              </p>
+      <section className="mx-auto max-w-[1120px] px-4 py-20 text-center">
+        <h2 className="text-5xl font-semibold leading-tight">Luxury Cars for Sale<br />
+          <span className="font-serif italic text-[#f2c66d]">at the Best Price</span>
+        </h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-2">
+          <div className="relative h-[460px] overflow-hidden rounded-2xl">
+            <Image src={featured[0] ? getFeaturedImage(featured[0]) : "/images/hero-listings.jpg"} alt="Inventory" fill className="object-cover" />
+            <div className="absolute inset-0 bg-black/35" />
+            <div className="absolute inset-x-0 bottom-8 text-center text-white">
+              <p className="text-4xl font-semibold">Explore Luxury Cars</p>
+              <p className="font-serif text-5xl italic text-[#f5c852]">Incredible Discounts</p>
+              <Link href="/listings" className="mt-4 inline-block rounded-full bg-[#f5c62d] px-8 py-3 font-semibold text-black">{content.cta1}</Link>
             </div>
           </div>
-          <div className="flex items-start gap-3">
-            <Gauge className="mt-0.5 h-6 w-6 text-blue-600" />
-            <div>
-              <p className="font-semibold">Straightforward Process</p>
-              <p className="text-sm text-gray-600">No hidden headaches</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <Wallet className="mt-0.5 h-6 w-6 text-blue-600" />
-            <div>
-              <p className="font-semibold">Fair Pricing</p>
-              <p className="text-sm text-gray-600">Market-aligned values</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <Truck className="mt-0.5 h-6 w-6 text-blue-600" />
-            <div>
-              <p className="font-semibold">Nationwide Delivery</p>
-              <p className="text-sm text-gray-600">We can ship your classic</p>
+          <div className="relative h-[460px] overflow-hidden rounded-2xl">
+            <Image src={featured[1] ? getFeaturedImage(featured[1]) : "/images/hero-consign.jpg"} alt="Consign" fill className="object-cover" />
+            <div className="absolute inset-0 bg-black/35" />
+            <div className="absolute inset-x-0 bottom-8 text-center text-white">
+              <p className="text-4xl font-semibold">Consign with the largest</p>
+              <p className="font-serif text-5xl italic text-[#f5c852]">Luxury Dealership</p>
+              <Link href="/consign" className="mt-4 inline-block rounded-full bg-[#f5c62d] px-8 py-3 font-semibold text-black">{content.cta2}</Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* LISTINGS */}
-      <section className="container mx-auto px-4">
-        <div className="mt-12 flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-bold">Fresh in the shop</h2>
-            <p className="text-sm text-gray-600">
-              Hand-picked icons from coast to coast
-            </p>
-          </div>
-          <Link
-            href="/listings"
-            className="text-sm font-semibold text-blue-600 hover:text-blue-700"
-          >
-            View all →
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse rounded-xl border border-gray-200"
-              >
-                <div className="h-48 w-full bg-gray-100" />
-                <div className="space-y-2 p-4">
-                  <div className="h-4 w-2/3 bg-gray-100" />
-                  <div className="h-3 w-1/2 bg-gray-100" />
-                  <div className="h-5 w-1/3 bg-gray-100" />
-                </div>
+      <section className="mx-auto max-w-[1700px] px-4 pb-16">
+        <div className="rounded-3xl bg-black px-6 py-14 text-white md:px-14">
+          <div className="grid gap-10 md:grid-cols-3">
+            {[{
+              icon: <ShieldCheck className="mx-auto text-[#f5c62d]" />, title: "Why Discerning Drivers Choose Us", text: "Elite brands, transparent support and a premium buying experience from start to finish."
+            }, { icon: <Handshake className="mx-auto text-[#f5c62d]" />, title: "Concierge-Like Service", text: "Our team helps you discover the perfect vehicle quickly, with full guidance on every step."
+            }, { icon: <CarFront className="mx-auto text-[#f5c62d]" />, title: "Unmatched Selection", text: "From modern exotics to timeless icons, we deliver one of the strongest luxury inventories." }].map((item) => (
+              <div key={item.title} className="text-center">
+                {item.icon}
+                <h3 className="mt-4 text-3xl font-semibold">{item.title}</h3>
+                <p className="mt-3 text-lg text-white/80">{item.text}</p>
               </div>
             ))}
           </div>
-        ) : (
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {visibleCars.slice(0, 4).map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
-          </div>
-        )}
+        </div>
       </section>
 
-      {/* CTA */}
-      <section className="container mx-auto px-4">
-        <div className="my-14 rounded-2xl border border-gray-200 bg-gradient-to-r from-blue-50 to-white p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <div>
-              {isEditing ? (
-                <>
-                  <input
-                    value={content.bannerTitle}
-                    onChange={(e) =>
-                      setContent({ ...content, bannerTitle: e.target.value })
-                    }
-                    className="w-full border p-2 rounded font-bold text-lg mb-2"
-                  />
-                  <textarea
-                    value={content.bannerText}
-                    onChange={(e) =>
-                      setContent({ ...content, bannerText: e.target.value })
-                    }
-                    className="w-full border p-2 rounded text-gray-700"
-                  />
-                </>
-              ) : (
-                <>
-                  <h3 className="text-xl font-bold">{content.bannerTitle}</h3>
-                  <p className="text-gray-600">{content.bannerText}</p>
-                </>
-              )}
-            </div>
-            <div className="flex gap-3">
-              
-              <Link
-                href="/consign"
-                className="rounded-full bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700 transition"
-              >
-                Consign Now
-              </Link>
-            </div>
+      <section className="mx-auto max-w-[1120px] px-4 py-12 text-center">
+        <h3 className="text-6xl font-semibold">Our <span className="font-serif italic text-[#f2c66d]">showrooms</span></h3>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-[#4e516a]">At HGreg Lux, we redefine the luxury car-buying experience with premium selection and dedicated support.</p>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {showroomCards.map((room, idx) => (
+            <article key={room.city} className="rounded-2xl bg-white p-3 shadow-sm">
+              <div className="relative h-44 overflow-hidden rounded-xl bg-gray-100">
+                <Image src={featured[idx + 2] ? getFeaturedImage(featured[idx + 2]) : "/images/hero-about.jpg"} alt={room.city} fill className="object-cover" />
+              </div>
+              <h4 className="mt-4 text-3xl font-semibold">{room.city}</h4>
+              <p className="mt-2 text-sm text-[#4e516a]">{room.address}</p>
+              <p className="mt-1 flex items-center justify-center gap-2 text-sm font-medium"><Phone size={14} /> {room.phone}</p>
+            </article>
+          ))}
+        </div>
+        <button className="mt-8 rounded-full bg-[#f5c62d] px-10 py-3 font-semibold text-black">See More</button>
+      </section>
+
+      <section className="mx-auto max-w-[1120px] px-4 py-12">
+        <div className="relative h-[320px] overflow-hidden rounded-3xl">
+          <Image src={featured[5] ? getFeaturedImage(featured[5]) : "/images/hero-contact.jpg"} alt="Reviews" fill className="object-cover" />
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white">
+            <h3 className="text-5xl font-semibold leading-tight">See what people have to say about <span className="font-serif italic text-[#f5c852]">HGreg Lux</span></h3>
+            <button className="mt-6 rounded-full bg-[#f5c62d] px-10 py-3 font-semibold text-black">View reviews</button>
           </div>
         </div>
       </section>
 
-      {/* ADMIN CONTROLS */}
+      <section className="mx-auto max-w-[1120px] px-4 pb-14 pt-6 text-center">
+        <h3 className="text-6xl font-semibold">We <span className="font-serif italic text-[#f2c66d]">Support</span></h3>
+        <div className="mt-10 grid grid-cols-2 gap-4 text-gray-400 md:grid-cols-6">
+          {brands.map((brand) => (
+            <div key={`bottom-${brand}`} className="rounded-full border border-gray-300 bg-white px-3 py-4 text-sm font-semibold">{brand}</div>
+          ))}
+        </div>
+      </section>
+
       {role === "superadmin" && (
-        <div className="text-center my-8">
-          <button
-            onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-            className={`px-6 py-2 rounded-lg text-sm font-semibold ${
-              isEditing
-                ? "bg-green-600 hover:bg-green-700 text-white"
-                : "bg-gray-700 hover:bg-gray-600 text-white"
-            }`}
-          >
+        <div className="pb-10 text-center">
+          <button onClick={() => (isEditing ? handleSave() : setIsEditing(true))} className={`rounded-full px-6 py-2 text-sm font-semibold text-white ${isEditing ? "bg-green-600" : "bg-[#1e2240]"}`}>
             {isEditing ? "💾 Save Changes" : "✏️ Edit Page"}
           </button>
-          {status && (
-            <p className="mt-3 text-green-600 text-sm font-medium">{status}</p>
-          )}
+          {status && <p className="mt-3 text-sm font-medium text-green-600">{status}</p>}
         </div>
       )}
+
+      {loading && <div className="pb-8 text-center text-sm text-gray-500">Loading inventory...</div>}
     </main>
   );
 }

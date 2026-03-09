@@ -1,12 +1,12 @@
 "use client";
 export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { getUserRole } from "@/lib/auth";
-import { CheckCircle, DollarSign, FileCheck2 } from "lucide-react";
-//
+
 interface FinanceItem {
   image: string;
   link: string;
@@ -56,7 +56,6 @@ export default function FinancePage() {
   const [role, setRole] = useState<string | null>(null);
   const [status, setStatus] = useState("");
 
-  /* ---------- Firestore load ---------- */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -68,7 +67,6 @@ export default function FinancePage() {
 
         if (snap.exists()) {
           const data = snap.data() as Partial<FinanceData>;
-          // asigură fallback-uri pentru câmpuri lipsă
           setContent({
             heroImage: data.heroImage || defaultData.heroImage,
             title: data.title || defaultData.title,
@@ -90,7 +88,6 @@ export default function FinancePage() {
     fetchData();
   }, []);
 
-  /* ---------- Save ---------- */
   const handleSave = async () => {
     const docRef = doc(db, "pages", "finance");
     try {
@@ -103,7 +100,6 @@ export default function FinancePage() {
     setTimeout(() => setStatus(""), 3000);
   };
 
-  /* ---------- Upload helper ---------- */
   const uploadImage = async (file: File | null): Promise<string | null> => {
     if (!file) return null;
     const formData = new FormData();
@@ -121,11 +117,7 @@ export default function FinancePage() {
     if (url) setContent((prev) => ({ ...prev, heroImage: url }));
   };
 
-  const handlePartnerUpload = async (
-    rowIndex: number,
-    colIndex: number,
-    file: File | null
-  ) => {
+  const handlePartnerUpload = async (rowIndex: number, colIndex: number, file: File | null) => {
     const url = await uploadImage(file);
     if (!url) return;
     setContent((prev) => {
@@ -135,7 +127,6 @@ export default function FinancePage() {
     });
   };
 
-  /* ---------- Add / Remove ---------- */
   const addRow = () => {
     setContent((prev) => ({
       ...prev,
@@ -143,21 +134,9 @@ export default function FinancePage() {
         ...(prev.rows || []),
         {
           items: [
-            {
-              image: "/images/placeholder.jpg",
-              link: "#",
-              name: "New Partner",
-            },
-            {
-              image: "/images/placeholder.jpg",
-              link: "#",
-              name: "New Partner",
-            },
-            {
-              image: "/images/placeholder.jpg",
-              link: "#",
-              name: "New Partner",
-            },
+            { image: "/images/placeholder.jpg", link: "#", name: "New Partner" },
+            { image: "/images/placeholder.jpg", link: "#", name: "New Partner" },
+            { image: "/images/placeholder.jpg", link: "#", name: "New Partner" },
           ],
         },
       ],
@@ -171,11 +150,9 @@ export default function FinancePage() {
     }));
   };
 
-  /* ---------- JSX ---------- */
   return (
-    <section className="bg-white text-gray-900 min-h-screen">
-      {/* 🏁 Hero Section */}
-      <div className="relative w-full h-[50vh] min-h-[420px] flex items-center justify-center text-center overflow-hidden">
+    <section className="min-h-screen bg-[#f3f3f3] text-[#1e2240]">
+      <div className="relative flex h-[50vh] min-h-[420px] w-full items-center justify-center overflow-hidden text-center">
         <Image
           src={content.heroImage || "/images/placeholder-hero.jpg"}
           alt="Finance Hero"
@@ -185,7 +162,7 @@ export default function FinancePage() {
           className="object-cover"
           unoptimized
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
+        <div className="absolute inset-0 bg-black/45" />
 
         <div className="relative z-10 max-w-3xl px-6">
           {isEditing ? (
@@ -193,128 +170,129 @@ export default function FinancePage() {
               <input
                 type="file"
                 onChange={(e) => handleHeroUpload(e.target.files?.[0] || null)}
-                className="text-xs bg-white/80 p-1 rounded mb-2"
+                className="mb-2 rounded bg-white/80 p-1 text-xs"
               />
               <input
                 value={content.title}
-                onChange={(e) =>
-                  setContent({ ...content, title: e.target.value })
-                }
-                className="text-4xl md:text-5xl font-bold text-center border-b border-blue-400 focus:outline-none bg-transparent text-white w-full mb-2"
+                onChange={(e) => setContent({ ...content, title: e.target.value })}
+                className="mb-2 w-full border-b border-blue-400 bg-transparent text-center text-4xl font-bold text-white focus:outline-none md:text-5xl"
               />
               <textarea
                 value={content.subtitle}
-                onChange={(e) =>
-                  setContent({ ...content, subtitle: e.target.value })
-                }
-                className="w-full text-center text-white bg-transparent border p-2 rounded-md text-sm"
+                onChange={(e) => setContent({ ...content, subtitle: e.target.value })}
+                className="w-full rounded-md border bg-transparent p-2 text-center text-sm text-white"
               />
             </>
           ) : (
             <>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 drop-shadow">
-                {content.title}
-              </h1>
-              <p className="text-gray-200 text-lg max-w-2xl mx-auto">
-                {content.subtitle}
-              </p>
+              <h1 className="mb-3 text-4xl font-extrabold text-white drop-shadow md:text-5xl">{content.title}</h1>
+              <p className="mx-auto max-w-2xl text-lg text-gray-200">{content.subtitle}</p>
             </>
           )}
         </div>
       </div>
 
-      {/* 💬 Description Section */}
-      <div className="max-w-5xl mx-auto px-6 py-16 text-center">
-        {isEditing ? (
-          <textarea
-            value={content.description}
-            onChange={(e) =>
-              setContent({ ...content, description: e.target.value })
-            }
-            className="w-full border border-gray-300 rounded-lg p-3 text-gray-700 text-center"
-          />
-        ) : (
-          <p className="text-gray-600 text-lg leading-relaxed">
-            {content.description}
-          </p>
-        )}
-      </div>
-
-      {/* ⭐ Benefits Section */}
-     {/* <div className="bg-gray-50 py-16">
-        <div className="max-w-6xl mx-auto text-center">
-          {isEditing ? (
-            <input
-              value={content.benefitsTitle}
-              onChange={(e) =>
-                setContent({ ...content, benefitsTitle: e.target.value })
-              }
-              className="text-3xl font-bold border-b border-blue-400 bg-transparent mb-8 text-gray-900"
-            />
-          ) : (
-            <h2 className="text-3xl font-bold mb-8 text-gray-900">
-              {content.benefitsTitle}
+      <div className="mx-auto max-w-[1220px] px-6 py-20">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className="relative h-[560px] overflow-hidden rounded-[28px]">
+            <Image src="/images/hero-finance.jpg" alt="Luxury showroom" fill className="object-cover" />
+          </div>
+          <div>
+            <h2 className="text-6xl font-semibold leading-tight text-[#22243f]">
+              HGreg Lux Exclusively
+              <span className="block font-serif italic text-[#f0c766]">Low Rates</span>
             </h2>
-          )}
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {(content.benefits || []).map((b, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition"
-              >
-                <div className="text-blue-600 mb-3">
-                  {i === 0 ? (
-                    <DollarSign size={28} />
-                  ) : i === 1 ? (
-                    <FileCheck2 size={28} />
-                  ) : (
-                    <CheckCircle size={28} />
-                  )}
-                </div>
-                {isEditing ? (
-                  <textarea
-                    value={b}
-                    onChange={(e) => {
-                      const benefits = [...(content.benefits || [])];
-                      benefits[i] = e.target.value;
-                      setContent({ ...content, benefits });
-                    }}
-                    className="w-full border p-2 rounded text-center text-sm"
-                  />
-                ) : (
-                  <p className="text-gray-600 text-base">{b}</p>
-                )}
-              </div>
-            ))}
+            <p className="mt-6 text-lg leading-relaxed text-[#53566f]">
+              It’s no secret, our success in the industry, gives us the benefits of incredibly low interest rates for those
+              looking to finance their luxury vehicle. At HGreg Lux, when you’re one click away from getting the best rates
+              on the market, nothing will stop you from driving home your dream car.
+            </p>
           </div>
         </div>
-      </div>*/}
 
-      {/* 💰 Finance Partners */}
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        <h2 className="text-center text-3xl font-bold mb-10 text-gray-900">
-          Our Financing Partners
-        </h2>
+        <div className="mt-16 grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <h3 className="text-6xl font-semibold leading-tight text-[#22243f]">
+              We&apos;ve got you <span className="font-serif italic text-[#f0c766]">covered</span>
+            </h3>
+            <p className="mt-4 text-[#53566f]">A sound investment.</p>
+            <p className="mt-4 text-lg leading-relaxed text-[#53566f]">
+              There is no need to take chances with your valued investment when HGreg Lux offers a wide selection of warranty
+              plans, catered to your every need. Be sure to leave with a peace of mind for the road ahead, and exploit all the
+              pleasures of driving your new luxury vehicle.
+            </p>
+            <ul className="mt-8 space-y-3 text-lg text-[#22243f]">
+              <li>◉ Day One, Mile One Coverage</li>
+              <li>◉ Nationwide Service Facilities</li>
+              <li>◉ 24/7 Roadside Assistance & Towing</li>
+              <li>◉ Exceptional Claims Service</li>
+            </ul>
+          </div>
+
+          <div className="relative h-[560px] overflow-hidden rounded-[28px]">
+            <Image src="/images/hero-contact.jpg" alt="Warranty coverage" fill className="object-cover" />
+            <div className="absolute inset-0 bg-black/35" />
+            <div className="absolute left-8 top-8 right-8 text-white">
+              <h4 className="text-4xl font-semibold">Parts covered include:</h4>
+              <div className="mt-6 grid grid-cols-2 gap-4 text-xl">
+                <ul className="space-y-2">
+                  <li>◉ Suspension</li>
+                  <li>◉ Brake System</li>
+                  <li>◉ Air Conditioning</li>
+                  <li>◉ Transmission/Transfer Case</li>
+                  <li>◉ Drive Axle</li>
+                </ul>
+                <ul className="space-y-2">
+                  <li>◉ Engine</li>
+                  <li>◉ Steering</li>
+                  <li>◉ Electrical</li>
+                  <li>◉ Seals & Gaskets</li>
+                  <li>◉ High Tech</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-20">
+        <h2 className="mb-10 text-center text-3xl font-bold text-gray-900">Our Financing Partners</h2>
+
+        <div className="relative mb-14 h-[360px] overflow-hidden rounded-[28px]">
+          <Image src="/images/hero-listings.jpg" alt="Finance my Luxury Vehicle" fill className="object-cover" />
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
+            <h3 className="text-6xl font-semibold">
+              Finance my <span className="font-serif italic text-[#f0c766]">Luxury Vehicle</span>
+            </h3>
+            <p className="mt-4 max-w-4xl text-lg text-white/90">
+              Whether you’re looking to purchase, or finance your next vehicle from HGreg Lux, our simple online financing
+              form takes only a few minutes to fill out, and a response will be sent shortly!
+            </p>
+            <button className="mt-7 rounded-full border border-[#f0c766] px-10 py-3 text-xl font-semibold text-[#f0c766]">
+              Apply Now
+            </button>
+          </div>
+        </div>
 
         {(content.rows || []).map((row, rowIndex) => (
           <div key={rowIndex} className="relative mb-12">
             {isEditing && (
               <button
                 onClick={() => removeRow(rowIndex)}
-                className="absolute -top-8 right-0 text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                className="absolute -top-8 right-0 rounded bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600"
               >
                 🗑️ Remove Row
               </button>
             )}
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid gap-8 md:grid-cols-3">
               {(row.items || []).map((item, colIndex) => (
                 <div
                   key={colIndex}
-                  className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden"
+                  className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg"
                 >
-                  <div className="relative w-full aspect-[16/9] bg-gray-50 overflow-hidden">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-50">
                     <Image
                       src={item.image || "/images/placeholder.jpg"}
                       alt={item.name || "Finance Partner"}
@@ -326,14 +304,8 @@ export default function FinancePage() {
                     {isEditing && (
                       <input
                         type="file"
-                        onChange={(e) =>
-                          handlePartnerUpload(
-                            rowIndex,
-                            colIndex,
-                            e.target.files?.[0] || null
-                          )
-                        }
-                        className="absolute bottom-2 left-2 text-xs bg-white/80 p-1 rounded"
+                        onChange={(e) => handlePartnerUpload(rowIndex, colIndex, e.target.files?.[0] || null)}
+                        className="absolute bottom-2 left-2 rounded bg-white/80 p-1 text-xs"
                       />
                     )}
                   </div>
@@ -346,36 +318,27 @@ export default function FinancePage() {
                           value={item.name}
                           onChange={(e) => {
                             const updated = [...(content.rows || [])];
-                            updated[rowIndex].items[colIndex].name =
-                              e.target.value;
+                            updated[rowIndex].items[colIndex].name = e.target.value;
                             setContent({ ...content, rows: updated });
                           }}
-                          className="w-full border p-1 rounded mb-1 text-sm text-center"
+                          className="mb-1 w-full rounded border p-1 text-center text-sm"
                         />
                         <input
                           type="text"
                           value={item.link}
                           onChange={(e) => {
                             const updated = [...(content.rows || [])];
-                            updated[rowIndex].items[colIndex].link =
-                              e.target.value;
+                            updated[rowIndex].items[colIndex].link = e.target.value;
                             setContent({ ...content, rows: updated });
                           }}
-                          className="w-full border p-1 rounded text-sm text-center"
+                          className="w-full rounded border p-1 text-center text-sm"
                           placeholder="Partner link"
                         />
                       </>
                     ) : (
                       <>
-                        <h3 className="font-semibold text-gray-900 text-base mb-1">
-                          {item.name}
-                        </h3>
-                        <a
-                          href={item.link || "#"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline text-sm"
-                        >
+                        <h3 className="mb-1 text-base font-semibold text-gray-900">{item.name}</h3>
+                        <a href={item.link || "#"} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                           Visit Partner →
                         </a>
                       </>
@@ -389,32 +352,24 @@ export default function FinancePage() {
 
         {isEditing && (
           <div className="text-center">
-            <button
-              onClick={addRow}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium"
-            >
+            <button onClick={addRow} className="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white hover:bg-blue-700">
               + Add Row
             </button>
           </div>
         )}
       </div>
 
-      {/* 🧭 Admin Controls */}
       {role === "superadmin" && (
-        <div className="text-center mt-12 pb-16">
+        <div className="mt-12 pb-16 text-center">
           <button
             onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-            className={`px-6 py-2 rounded-lg text-sm font-semibold transition ${
-              isEditing
-                ? "bg-green-600 hover:bg-green-700 text-white"
-                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className={`rounded-lg px-6 py-2 text-sm font-semibold transition ${
+              isEditing ? "bg-green-600 text-white hover:bg-green-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             {isEditing ? "💾 Save Changes" : "✏️ Edit Page"}
           </button>
-          {status && (
-            <p className="mt-3 text-green-600 text-sm font-medium">{status}</p>
-          )}
+          {status && <p className="mt-3 text-sm font-medium text-green-600">{status}</p>}
         </div>
       )}
     </section>
