@@ -29,7 +29,7 @@ export default function Navbar() {
   const navLinks = [
     { href: "/listings", label: "Find Your Car" },
     { href: "/consign", label: "Consignment" },
-    { href: "/sold", label: "Sold" },
+    { href: "/sold", label: "Sell or Trade" },
     { href: "/finance", label: "Financing" },
     { href: "/about", label: "About Us" },
   ];
@@ -49,7 +49,7 @@ export default function Navbar() {
           {siteInfo?.logoUrl ? (
             <img src={siteInfo.logoUrl} alt={siteInfo.siteName || "Logo"} className="h-10 w-auto" />
           ) : (
-            <span className="text-2xl font-semibold tracking-wider">VERCEL4</span>
+            <span className="text-2xl font-semibold tracking-wider">HGREG LUX</span>
           )}
         </Link>
 
@@ -61,7 +61,12 @@ export default function Navbar() {
           ))}
         </div>
 
-        
+        <div className="hidden items-center gap-3 md:flex">
+          <button className="rounded-full border border-white/30 p-2 hover:border-[#f5c62d] hover:text-[#f5c62d]"><Heart size={16} /></button>
+          <a href={`tel:${siteInfo?.phone || "7543189003"}`} className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-black">
+            <Phone size={14} /> {siteInfo?.phone || "754-318-9003"}
+          </a>
+        </div>
 
         <button onClick={() => setOpen((prev) => !prev)} className="md:hidden">
           {open ? <X /> : <Menu />}
