@@ -8,6 +8,19 @@ import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import CarGallery from "@/components/listings/CarGallery";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import CarPricingBox from "@/components/car/CarPricingBox";
+import {
+  Calendar,
+  CarFront,
+  Cog,
+  Factory,
+  FileText,
+  Gauge,
+  Hash,
+  MapPin,
+  Palette,
+  UserRound,
+  Waypoints,
+} from "lucide-react";
 
 /* 🧠 Recursive deep search in schemaData */
 function deepFindValue(obj: any, key: string): any {
@@ -107,64 +120,40 @@ export default function CarDetailsPage() {
   const statusColor = statusData?.color || "#999";
   const statusName = statusData?.name || car.status || "Unknown";
 
+  const pickPdfItem = (items: any[] | undefined) => {
+    if (!Array.isArray(items) || items.length === 0) return null;
+
+    const imageDelivery = items.find(
+      (item) =>
+        typeof item?.src === "string" &&
+        (item?.resource_type === "image" || item.src.includes("/image/upload/"))
+    );
+
+    if (imageDelivery) return imageDelivery;
+
+    return items.find(
+      (item) => typeof item?.src === "string" && item.src.length > 0
+    );
+  };
+
+  const files = car.schemaData["Files"]?.files;
+  const pdf = car.schemaData["PDF"]?.files;
+  const pdfItem = pickPdfItem(files) || pickPdfItem(pdf);
+  const pdfFile = pdfItem?.src;
+  const pdfHref = pdfFile
+    ? pdfItem?.public_id
+      ? `/api/files/view?publicId=${encodeURIComponent(pdfItem.public_id)}&format=pdf&src=${encodeURIComponent(pdfFile)}`
+      : pdfFile
+    : null;
+
   return (
-    <div className="max-w-[1600px] mx-auto p-6">
-      {/* TITLE + INFO + CARFAX în dreapta */}
-      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-        {/* LEFT — Title + Info */}
-        <div>
-          <h1 className="text-3xl font-bold">{title}</h1>
-          <p className="text-gray-600 mt-1">
-            {year || "N/A"} • {mileage ? `${formatNumber(mileage)} miles` : "—"}{" "}
-            • {stock ? `Stock: ${stock}` : "—"}
-          </p>
-        </div>
-
-        {/* RIGHT — CARFAX LOGO (aliniat cu textul, nu cu partea de sus) */}
-        {(() => {
-          const pickPdfItem = (items: any[] | undefined) => {
-            if (!Array.isArray(items) || items.length === 0) return null;
-
-            const imageDelivery = items.find(
-              (item) =>
-                typeof item?.src === "string" &&
-                (item?.resource_type === "image" ||
-                  item.src.includes("/image/upload/"))
-            );
-
-            if (imageDelivery) return imageDelivery;
-
-            return items.find(
-              (item) => typeof item?.src === "string" && item.src.length > 0
-            );
-          };
-
-          const files = car.schemaData["Files"]?.files;
-          const pdf = car.schemaData["PDF"]?.files;
-
-          const pdfItem = pickPdfItem(files) || pickPdfItem(pdf);
-          const pdfFile = pdfItem?.src;
-          if (!pdfFile) return null;
-
-          const pdfHref = pdfItem?.public_id
-            ? `/api/files/view?publicId=${encodeURIComponent(pdfItem.public_id)}&format=pdf&src=${encodeURIComponent(pdfFile)}`
-            : pdfFile;
-
-          return (
-            <a
-              href={pdfHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 md:mt-0 md:ml-4"
-            >
-              <img
-                src="/images/carfax-logo.jpg"
-                alt="CarFax Report"
-                className="w-28 md:w-32 hover:opacity-80 transition"
-              />
-            </a>
-          );
-        })()}
+    <div className="max-w-[1600px] mx-auto p-6 bg-[#f5f5f5]">
+      <div className="mb-6">
+        <h1 className="text-5xl font-semibold text-[#161b33]">{title}</h1>
+        <p className="text-gray-600 mt-2 text-lg">
+          {year || "N/A"} • {mileage ? `${formatNumber(mileage)} miles` : "—"} •{" "}
+          {stock ? `Stock: ${stock}` : "—"}
+        </p>
       </div>
 
       {/* 🖼️ GALLERY */}
@@ -178,8 +167,10 @@ export default function CarDetailsPage() {
       </div>
 
       {/* 🧩 SECTIONS */}
-      <div className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 mt-10">
-        {car.schemaData && <DynamicSections schemaData={car.schemaData} />}
+      <div className="bg-white p-10 rounded-2xl shadow-sm border border-gray-200 mt-10">
+        {car.schemaData && (
+          <DynamicSections schemaData={car.schemaData} pdfHref={pdfHref} />
+        )}
       </div>
     </div>
   );
@@ -202,7 +193,13 @@ export default function CarDetailsPage() {
 
   /* 🧩 Component that applies schema_order from Firestore */
   /* 🧩 Component that applies schema_order from Firestore */
-  function DynamicSections({ schemaData }: { schemaData: any }) {
+  function DynamicSections({
+    schemaData,
+    pdfHref,
+  }: {
+    schemaData: any;
+    pdfHref: string | null;
+  }) {
     const [schemaOrder, setSchemaOrder] = useState<
       { name: string; active: boolean }[] | null
     >(null);
@@ -331,6 +328,30 @@ export default function CarDetailsPage() {
       typeof value === "string" &&
       (value.includes("youtube.com") || value.includes("youtu.be"));
 
+    const fieldIcon = (name: string) => {
+      const normalized = name.trim().toLowerCase();
+      if (normalized.includes("year")) return <Calendar size={16} />;
+      if (normalized.includes("make")) return <Factory size={16} />;
+      if (normalized.includes("model")) return <CarFront size={16} />;
+      if (normalized.includes("mileage") || normalized.includes("mile"))
+        return <Gauge size={16} />;
+      if (normalized.includes("engine")) return <Cog size={16} />;
+      if (normalized.includes("transmission")) return <Waypoints size={16} />;
+      if (normalized.includes("drivetrain") || normalized.includes("traction"))
+        return <CarFront size={16} />;
+      if (
+        normalized.includes("exterior") ||
+        normalized.includes("interior") ||
+        normalized.includes("color")
+      )
+        return <Palette size={16} />;
+      if (normalized.includes("vin") || normalized.includes("stock"))
+        return <Hash size={16} />;
+      if (normalized.includes("location")) return <MapPin size={16} />;
+      if (normalized.includes("seller")) return <UserRound size={16} />;
+      return <FileText size={16} />;
+    };
+
     return (
       <>
         {finalSections.map((section) => {
@@ -449,7 +470,7 @@ export default function CarDetailsPage() {
               {/* 🔹 Obiecte structurate */}
               {isObject && (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
                     {/* Dacă structura schema încă nu e încărcată, nu afișăm nimic */}
                     {!schemaStructure
                       ? null
@@ -542,9 +563,12 @@ export default function CarDetailsPage() {
                             return (
                               <div
                                 key={fieldName}
-                                className="flex flex-col bg-gray-50 border border-gray-100 rounded-lg p-4 hover:bg-gray-100 transition"
+                                className="flex flex-col bg-[#f6f6f6] border border-gray-200 rounded-xl p-4"
                               >
-                                <span className="text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                                <span className="text-xs font-semibold uppercase text-gray-500 tracking-wide flex items-center gap-2">
+                                  <span className="text-gray-500">
+                                    {fieldIcon(fieldName)}
+                                  </span>
                                   {fieldName.replace(/_/g, " ")}
                                 </span>
 
@@ -556,6 +580,21 @@ export default function CarDetailsPage() {
                           });
                         })()}
                   </div>
+
+                  {section.toLowerCase() === "details" && pdfHref && (
+                    <a
+                      href={pdfHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mb-6"
+                    >
+                      <img
+                        src="/images/carfax-logo.jpg"
+                        alt="Show me the Carfax"
+                        className="w-52 rounded-xl border border-gray-300 hover:opacity-80 transition"
+                      />
+                    </a>
+                  )}
 
                   {/* 🔹 Content + imagini */}
                   {data.content && (
