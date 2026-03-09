@@ -108,11 +108,11 @@ export default function CarCard({ car }: Props) {
   const statusColor = statusColors[statusKey]?.color || "#777777";
 
   return (
-    <div className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+    <div className="group relative overflow-hidden rounded-2xl border border-[#dfdfdf] bg-[#f7f7f7] shadow-[0_1px_0_rgba(0,0,0,0.03)] transition hover:shadow-md">
       {/* 🖼️ Imagine principală */}
       <Link
         href={`/listings/${car.id}`}
-        className="block relative w-full h-56 md:h-55 overflow-hidden"
+        className="relative block h-52 w-full overflow-hidden"
       >
         <Image
           src={mainImage}
@@ -126,7 +126,7 @@ export default function CarCard({ car }: Props) {
         />
 
         {/* 🔹 Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-70 group-hover:opacity-90 transition"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
 
         {/* 🔹 Status Badge — culoare din Firestore */}
         {/* <span
@@ -142,36 +142,29 @@ export default function CarCard({ car }: Props) {
         {/* Titlu */}
         <Link
           href={`/listings/${car.id}`}
-          className="block text-[17px] font-semibold text-gray-900 leading-snug hover:text-blue-600 transition-colors truncate"
+          className="block truncate text-[22px] font-semibold leading-snug text-[#111] transition-colors hover:text-black"
         >
           {title}
         </Link>
 
         {/* An + kilometraj */}
-        <p className="text-sm text-gray-500 mt-1">
-          {year ? `${year}` : ""} •{" "}
-          {mileage ? `${formatNumber(mileage)} mileage` : "—"}
+        <p className="mt-1 text-sm text-gray-500">
+          {year ? `${year}` : ""} • {mileage ? `${formatNumber(mileage)} mi` : "—"}
         </p>
 
         {/* Preț */}
-        <p className="text-xl font-bold text-blue-600 mt-2 mb-3">
+        <p className="mb-3 mt-2 text-2xl font-bold text-[#111]">
           {price ? `$${formatNumber(price)}` : "—"}
         </p>
 
-        {/* Locație + buton */}
-        <div className="flex justify-between items-center">
-          {/*  {location ? (
-            <span className="text-sm text-gray-500 truncate">📍 {location}</span>
-          ) : (
-            <span className="text-sm text-gray-400">—</span>
-          )}*/}
-
-          <Link
-            href={`/listings/${car.id}`}
-            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            {/*  View details →*/}
-          </Link>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <span className="rounded-full border border-[#e2e2e2] bg-white px-2.5 py-1 text-xs text-gray-600">
+            {mileage ? `${formatNumber(mileage)} mi` : "Mileage N/A"}
+          </span>
+          <span className="rounded-full border border-[#e2e2e2] bg-white px-2.5 py-1 text-xs text-gray-600">
+            {location || "Orlando, FL"}
+          </span>
+          <Link href={`/listings/${car.id}`} className="hidden" />
         </div>
       </div>
     </div>
