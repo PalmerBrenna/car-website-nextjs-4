@@ -35,7 +35,7 @@ export default function RootLayout({
         <Navbar />
 
         {/* 🔹 Conținutul paginii — fără limitare globală de lățime */}
-        <main className="flex-1 w-full overflow-x-hidden">{children}</main>
+        <main className="flex-1 w-full overflow-x-hidden pt-[84px] md:pt-[92px]">{children}</main>
 
         {/* 🔹 Footer */}
         <Footer />

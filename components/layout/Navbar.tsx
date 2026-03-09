@@ -44,7 +44,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-black/70 to-transparent text-white">
+    <nav className="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-black/70 via-black/35 to-transparent text-white">
       <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between px-4 py-5">
         <Link href="/" className="flex items-center gap-2">
           {siteInfo?.logoUrl ? (
