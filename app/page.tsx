@@ -72,12 +72,6 @@ export default function HomePage() {
       const r = await getUserRole();
       setRole(r);
 
-      const docRef = doc(db, "pages", "home");
-      const snap = await getDoc(docRef, { source: "server" });
-      if (snap.exists())
-        setContent((prev) => ({ ...prev, ...(snap.data() as any) }));
-      else await setDoc(docRef, content);
-
       try {
         const data = await getCars();
         setCars(data);
@@ -88,17 +82,6 @@ export default function HomePage() {
       }
     })();
   }, []);
-
-  const handleSave = async () => {
-    try {
-      await updateDoc(doc(db, "pages", "home"), content);
-      setIsEditing(false);
-      setStatus("✅ Homepage updated successfully!");
-      setTimeout(() => setStatus(""), 3000);
-    } catch (err) {
-      console.error("Save failed:", err);
-    }
-  };
 
   const handleImageUpload = async (file: File | null) => {
     if (!file) return;
@@ -125,13 +108,21 @@ export default function HomePage() {
   ];
 
   const brandLogos = [
-  { name: "BMW", src: "/uploads/pages/bmw.png", className: "h-6" },
-  { name: "Porsche", src: "/uploads/pages/porsche.png", className: "h-3.5" },
-  { name: "Ferrari", src: "/uploads/pages/ferrari.png", className: "h-4" },
-  { name: "Lamborghini", src: "/uploads/pages/lamborghini.png", className: "h-3.5" },
-  { name: "Range Rover", src: "/uploads/pages/range-rover.png", className: "h-4.5" },
-  { name: "Maserati", src: "/uploads/pages/maserati.png", className: "h-5" },
-];
+    { name: "BMW", src: "/uploads/pages/bmw.png", className: "h-6" },
+    { name: "Porsche", src: "/uploads/pages/porsche.png", className: "h-3.5" },
+    { name: "Ferrari", src: "/uploads/pages/ferrari.png", className: "h-4" },
+    {
+      name: "Lamborghini",
+      src: "/uploads/pages/lamborghini.png",
+      className: "h-3.5",
+    },
+    {
+      name: "Range Rover",
+      src: "/uploads/pages/range-rover.png",
+      className: "h-4.5",
+    },
+    { name: "Maserati", src: "/uploads/pages/maserati.png", className: "h-5" },
+  ];
 
   const handleHomeSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -215,6 +206,10 @@ export default function HomePage() {
               <p className="mt-2 font-serif text-5xl italic text-[#f2c94c] md:text-6xl">
                 {content.heroTitle}
               </p>
+
+              <p className="mt-4 text-lg text-white/90 max-w-xl">
+                {content.heroText}
+              </p>
               <form
                 onSubmit={handleHomeSearch}
                 className="mt-8 flex w-full max-w-2xl items-center overflow-hidden rounded-full bg-white px-5 py-3 text-gray-500 shadow-xl"
@@ -238,26 +233,29 @@ export default function HomePage() {
             </>
           )}
 
-         <div className="mt-14 w-full max-w-[1160px] rounded-[24px] border border-white/8 bg-[linear-gradient(90deg,rgba(0,0,0,0.5)_0%,rgba(14,18,28,0.78)_50%,rgba(0,0,0,0.5)_100%)] px-5 py-1.5 shadow-[0_6px_18px_rgba(0,0,0,0.22)] backdrop-blur-sm">
-  <div className="flex items-center justify-between gap-2">
-    {brandLogos.map((brand) => (
-      <div key={brand.name} className="flex flex-1 items-center justify-center">
-        <img
-          src={brand.src}
-          alt={brand.name}
-          className={`${brand.className} w-auto max-w-[88px] object-contain opacity-80`}
-        />
-      </div>
-    ))}
+          <div className="mt-14 w-full max-w-[1160px] rounded-[24px] border border-white/8 bg-[linear-gradient(90deg,rgba(0,0,0,0.5)_0%,rgba(14,18,28,0.78)_50%,rgba(0,0,0,0.5)_100%)] px-5 py-1.5 shadow-[0_6px_18px_rgba(0,0,0,0.22)] backdrop-blur-sm">
+            <div className="flex items-center justify-between gap-2">
+              {brandLogos.map((brand) => (
+                <div
+                  key={brand.name}
+                  className="flex flex-1 items-center justify-center"
+                >
+                  <img
+                    src={brand.src}
+                    alt={brand.name}
+                    className={`${brand.className} w-auto max-w-[88px] object-contain opacity-80`}
+                  />
+                </div>
+              ))}
 
-    <Link
-      href="/listings"
-      className="inline-flex h-[34px] min-w-[108px] shrink-0 items-center justify-center rounded-full bg-[#f5c62d] px-4 text-[14px] font-semibold text-black transition hover:bg-[#e6b821]"
-    >
-      And More!
-    </Link>
-  </div>
-</div>
+              <Link
+                href="/listings"
+                className="inline-flex h-[34px] min-w-[108px] shrink-0 items-center justify-center rounded-full bg-[#f5c62d] px-4 text-[14px] font-semibold text-black transition hover:bg-[#e6b821]"
+              >
+                And More!
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -419,28 +417,28 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-[1100px] px-4 pb-16 pt-8 text-center">
-  <h3 className="text-6xl font-semibold">
-    We <span className="font-serif italic text-[#f2c66d]">Support</span>
-  </h3>
+        <h3 className="text-6xl font-semibold">
+          We <span className="font-serif italic text-[#f2c66d]">Support</span>
+        </h3>
 
-  <div className="mt-12 flex items-center justify-center gap-10">
-    {brandLogos.map((brand) => (
-      <img
-        key={`bottom-${brand.name}`}
-        src={brand.src}
-        alt={brand.name}
-        className="h-6 w-auto object-contain grayscale opacity-25 hover:opacity-60 transition"
-      />
-    ))}
+        <div className="mt-12 flex items-center justify-center gap-10">
+          {brandLogos.map((brand) => (
+            <img
+              key={`bottom-${brand.name}`}
+              src={brand.src}
+              alt={brand.name}
+              className="h-6 w-auto object-contain grayscale opacity-25 hover:opacity-60 transition"
+            />
+          ))}
 
-    <Link
-      href="/listings"
-      className="shrink-0 rounded-full bg-[#f5c62d] px-5 py-2 text-sm font-semibold text-black hover:bg-[#e6b821] transition"
-    >
-      And More!
-    </Link>
-  </div>
-</section>
+          <Link
+            href="/listings"
+            className="shrink-0 rounded-full bg-[#f5c62d] px-5 py-2 text-sm font-semibold text-black hover:bg-[#e6b821] transition"
+          >
+            And More!
+          </Link>
+        </div>
+      </section>
 
       {role === "superadmin" && (
         <div className="pb-10 text-center">
