@@ -31,7 +31,8 @@ export default function FinancePage() {
   const defaultData: FinanceData = {
     heroImage: "/images/hero-finance.jpg",
     title: "FINANCE",
-    subtitle: "Don't allow your aspirations to be hindered by financial constraints.",
+    subtitle:
+      "Don't allow your aspirations to be hindered by financial constraints.",
     description:
       "You have the power and the control thru hours financing partners or others of your choice, to find the best solution that sadisfied you and your needs. We are here to help finding the best solution and the Instant promise for tayloring for You a Exclusive offer Proven and Guaranteed Saving money solution from our part.",
     benefitsTitle: "Why Finance With Us?",
@@ -124,7 +125,7 @@ export default function FinancePage() {
   const handlePartnerUpload = async (
     rowIndex: number,
     colIndex: number,
-    file: File | null
+    file: File | null,
   ) => {
     const url = await uploadImage(file);
     if (!url) return;
@@ -248,7 +249,7 @@ export default function FinancePage() {
               alt="Luxury vehicles showroom"
               fill
               sizes="(max-width: 1024px) 100vw, 55vw"
-              className="object-cover"
+              className="object-cover object-[center_80%]"
               unoptimized
             />
           </div>
@@ -263,9 +264,9 @@ export default function FinancePage() {
             <p className="text-gray-600 mt-6 leading-relaxed text-lg">
               It&apos;s no secret, our success in the industry gives us the
               benefits of incredibly low interest rates for those looking to
-              finance their luxury vehicle. At HGreg Lux, when you&apos;re one click
-              away from getting the best rates on the market, nothing will stop
-              you from driving home your dream car.
+              finance their luxury vehicle. At HGreg Lux, when you&apos;re one
+              click away from getting the best rates on the market, nothing will
+              stop you from driving home your dream car.
             </p>
           </div>
         </div>
@@ -314,7 +315,9 @@ export default function FinancePage() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-transparent" />
 
             <div className="absolute top-8 left-8 right-8 text-white">
-              <h4 className="text-3xl font-semibold mb-4">Parts covered include:</h4>
+              <h4 className="text-3xl font-semibold mb-4">
+                Parts covered include:
+              </h4>
               <div className="grid sm:grid-cols-2 gap-2 text-sm md:text-base">
                 {[
                   "Suspension",
@@ -340,7 +343,7 @@ export default function FinancePage() {
       </div>
 
       {/* ⭐ Benefits Section */}
-     {/* <div className="bg-gray-50 py-16">
+      {/* <div className="bg-gray-50 py-16">
         <div className="max-w-6xl mx-auto text-center">
           {isEditing ? (
             <input
@@ -429,7 +432,7 @@ export default function FinancePage() {
                           handlePartnerUpload(
                             rowIndex,
                             colIndex,
-                            e.target.files?.[0] || null
+                            e.target.files?.[0] || null,
                           )
                         }
                         className="absolute bottom-2 left-2 text-xs bg-white/80 p-1 rounded"
@@ -518,9 +521,10 @@ export default function FinancePage() {
               </span>
             </h3>
             <p className="text-sm md:text-lg text-gray-200 mb-8">
-              Whether you&apos;re looking to purchase, or finance your next vehicle
-              from HGreg Lux, our simple online financing form takes only a few
-              minutes to fill out, and a response will be sent shortly!
+              Whether you&apos;re looking to purchase, or finance your next
+              vehicle from HGreg Lux, our simple online financing form takes
+              only a few minutes to fill out, and a response will be sent
+              shortly!
             </p>
             <a
               href="#"
