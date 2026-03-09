@@ -1,6 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
-
+import Image from "next/image";
 import { useEffect, useState, Suspense } from "react";
 import { getCars } from "@/lib/firestore";
 import { Car } from "@/lib/types";
