@@ -11,9 +11,9 @@ export default function Footer() {
         <p>2003-{year} © HGreglux.com, All rights reserved</p>
         <div className="flex flex-wrap gap-6">
           <Link href="/listings" className="hover:text-black">Find your car</Link>
-          <Link href="/faq" className="hover:text-black">Privacy Policy</Link>
-          <Link href="/sitemap" className="hover:text-black">SiteMap</Link>
-          <Link href="/contact" className="hover:text-black">Careers</Link>
+          <Link href="/about" className="hover:text-black">About Us</Link>
+          <Link href="/consign" className="hover:text-black">Consign</Link>
+          <Link href="/contact" className="hover:text-black">Contact</Link>
         </div>
       </div>
     </footer>

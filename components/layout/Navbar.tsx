@@ -32,6 +32,7 @@ export default function Navbar() {
     { href: "/sold", label: "Sell or Trade" },
     { href: "/finance", label: "Financing" },
     { href: "/about", label: "About Us" },
+    { href: "/contact", label: "Contact Us" },
   ];
 
   const handleSearch = (e: React.FormEvent) => {
@@ -59,13 +60,6 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-        </div>
-
-        <div className="hidden items-center gap-3 md:flex">
-          <button className="rounded-full border border-white/30 p-2 hover:border-[#f5c62d] hover:text-[#f5c62d]"><Heart size={16} /></button>
-          <a href={`tel:${siteInfo?.phone || "7543189003"}`} className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-black">
-            <Phone size={14} /> {siteInfo?.phone || "754-318-9003"}
-          </a>
         </div>
 
         <button onClick={() => setOpen((prev) => !prev)} className="md:hidden">
