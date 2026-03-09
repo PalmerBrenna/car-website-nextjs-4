@@ -167,15 +167,7 @@ function ListingsPage() {
               <p className="mt-2 text-xl text-gray-600">{filteredCars.length} Found</p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 text-sm">
-              <div className="flex items-center gap-2 rounded-xl border border-[#dfdfdf] bg-white px-4 py-3">
-                <MapPin className="h-4 w-4" />
-                <span>Your location</span>
-                <strong>20146</strong>
-              </div>
-              <div className="rounded-xl border border-[#dfdfdf] bg-white px-4 py-3">All locations</div>
-              <div className="rounded-xl border border-[#dfdfdf] bg-white px-4 py-3">Sort by Closest</div>
-            </div>
+            
           </div>
 
           {loading ? (

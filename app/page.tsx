@@ -61,7 +61,10 @@ export default function HomePage() {
 
   const visibleCars = cars.filter(
     (car) =>
-      car.status && !["sold", "pending", "rejected", "draft"].includes(car.status.toLowerCase())
+      car.status &&
+      !["sold", "pending", "rejected", "draft"].includes(
+        car.status.toLowerCase(),
+      ),
   );
 
   useEffect(() => {
@@ -71,7 +74,8 @@ export default function HomePage() {
 
       const docRef = doc(db, "pages", "home");
       const snap = await getDoc(docRef, { source: "server" });
-      if (snap.exists()) setContent((prev) => ({ ...prev, ...(snap.data() as any) }));
+      if (snap.exists())
+        setContent((prev) => ({ ...prev, ...(snap.data() as any) }));
       else await setDoc(docRef, content);
 
       try {
@@ -101,23 +105,33 @@ export default function HomePage() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folderType", "main");
-    const res = await fetch("/api/upload-page", { method: "POST", body: formData });
+    const res = await fetch("/api/upload-page", {
+      method: "POST",
+      body: formData,
+    });
     const data = await res.json();
     if (data.url) setContent((prev) => ({ ...prev, heroImage: data.url }));
   };
 
   const featured = visibleCars.slice(0, 6);
 
-  const brands = ["BMW", "PORSCHE", "FERRARI", "LAMBORGHINI", "RANGE ROVER", "MASERATI"];
+  const brands = [
+    "BMW",
+    "PORSCHE",
+    "FERRARI",
+    "LAMBORGHINI",
+    "RANGE ROVER",
+    "MASERATI",
+  ];
 
   const brandLogos = [
-    { name: "BMW", src: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg" },
-    { name: "Porsche", src: "https://upload.wikimedia.org/wikipedia/commons/7/70/Porsche_Logo.svg" },
-    { name: "Ferrari", src: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Ferrari-Logo.svg" },
-    { name: "Lamborghini", src: "https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg" },
-    { name: "Range Rover", src: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Land_Rover_logo_black.svg" },
-    { name: "Maserati", src: "https://upload.wikimedia.org/wikipedia/commons/1/13/Maserati_logo.svg" },
-  ];
+  { name: "BMW", src: "/uploads/pages/bmw.png", className: "h-6" },
+  { name: "Porsche", src: "/uploads/pages/porsche.png", className: "h-3.5" },
+  { name: "Ferrari", src: "/uploads/pages/ferrari.png", className: "h-4" },
+  { name: "Lamborghini", src: "/uploads/pages/lamborghini.png", className: "h-3.5" },
+  { name: "Range Rover", src: "/uploads/pages/range-rover.png", className: "h-4.5" },
+  { name: "Maserati", src: "/uploads/pages/maserati.png", className: "h-5" },
+];
 
   const handleHomeSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -127,9 +141,24 @@ export default function HomePage() {
   };
 
   const showroomCards = [
-    { city: "Orlando", address: "2510 Jetport Dr, Suite B", phone: "407 680 1635", image: "/public-showroom-orlando.jpg" },
-    { city: "Pompano Beach", address: "2500 West Sample Rd", phone: "754-318-9003", image: "/public-showroom-pompano.jpg" },
-    { city: "Miami", address: "17305 S Dixie Hwy", phone: "305-259-2638", image: "/public-showroom-miami.jpg" },
+    {
+      city: "Orlando",
+      address: "2510 Jetport Dr, Suite B",
+      phone: "407 680 1635",
+      image: "/public-showroom-orlando.jpg",
+    },
+    {
+      city: "Pompano Beach",
+      address: "2500 West Sample Rd",
+      phone: "754-318-9003",
+      image: "/public-showroom-pompano.jpg",
+    },
+    {
+      city: "Miami",
+      address: "17305 S Dixie Hwy",
+      phone: "305-259-2638",
+      image: "/public-showroom-miami.jpg",
+    },
   ];
 
   const heroImageToShow =
@@ -140,74 +169,155 @@ export default function HomePage() {
   return (
     <main className="bg-[#f3f3f3] text-[#1e2240]">
       <section className="relative min-h-[760px] overflow-hidden">
-        <Image src={heroImageToShow} alt="Hero" fill priority className="object-cover" />
+        <Image
+          src={heroImageToShow}
+          alt="Hero"
+          fill
+          priority
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-black/45" />
         <div className="relative mx-auto flex min-h-[760px] w-full max-w-[1280px] flex-col items-center px-4 pb-16 pt-28 text-center text-white">
           {isEditing ? (
             <div className="w-full max-w-3xl space-y-2 rounded-2xl bg-white/90 p-4 text-left text-black">
-              <input value={content.heroSubtitle} onChange={(e) => setContent({ ...content, heroSubtitle: e.target.value })} className="w-full rounded border p-2" />
-              <input value={content.heroTitle} onChange={(e) => setContent({ ...content, heroTitle: e.target.value })} className="w-full rounded border p-2" />
-              <input value={content.heroText} onChange={(e) => setContent({ ...content, heroText: e.target.value })} className="w-full rounded border p-2" />
-              <input type="file" onChange={(e) => handleImageUpload(e.target.files?.[0] || null)} className="w-full" />
+              <input
+                value={content.heroSubtitle}
+                onChange={(e) =>
+                  setContent({ ...content, heroSubtitle: e.target.value })
+                }
+                className="w-full rounded border p-2"
+              />
+              <input
+                value={content.heroTitle}
+                onChange={(e) =>
+                  setContent({ ...content, heroTitle: e.target.value })
+                }
+                className="w-full rounded border p-2"
+              />
+              <input
+                value={content.heroText}
+                onChange={(e) =>
+                  setContent({ ...content, heroText: e.target.value })
+                }
+                className="w-full rounded border p-2"
+              />
+              <input
+                type="file"
+                onChange={(e) => handleImageUpload(e.target.files?.[0] || null)}
+                className="w-full"
+              />
             </div>
           ) : (
             <>
-              <h1 className="text-5xl font-semibold uppercase tracking-wide md:text-7xl">{content.heroSubtitle}</h1>
-              <p className="mt-2 font-serif text-5xl italic text-[#f2c94c] md:text-6xl">{content.heroTitle}</p>
-              <form onSubmit={handleHomeSearch} className="mt-8 flex w-full max-w-2xl items-center overflow-hidden rounded-full bg-white px-5 py-3 text-gray-500 shadow-xl">
+              <h1 className="text-5xl font-semibold uppercase tracking-wide md:text-7xl">
+                {content.heroSubtitle}
+              </h1>
+              <p className="mt-2 font-serif text-5xl italic text-[#f2c94c] md:text-6xl">
+                {content.heroTitle}
+              </p>
+              <form
+                onSubmit={handleHomeSearch}
+                className="mt-8 flex w-full max-w-2xl items-center overflow-hidden rounded-full bg-white px-5 py-3 text-gray-500 shadow-xl"
+              >
                 <input
                   type="text"
                   value={homeSearch}
                   onChange={(e) => setHomeSearch(e.target.value)}
-                  placeholder={content.heroText || "Search by stock, make or model"}
+                  placeholder={
+                    content.heroText || "Search by stock, make or model"
+                  }
                   className="flex-1 bg-transparent text-left text-sm text-gray-700 outline-none"
                 />
-                <button type="submit" className="rounded-full bg-[#f5c62d] p-3 text-black hover:bg-[#e6b821] transition">
+                <button
+                  type="submit"
+                  className="rounded-full bg-[#f5c62d] p-3 text-black hover:bg-[#e6b821] transition"
+                >
                   <Search size={18} />
                 </button>
               </form>
             </>
           )}
 
-          <div className="mt-14 w-full max-w-6xl rounded-[24px] bg-gradient-to-r from-black/70 via-[#101826]/85 to-black/70 px-4 py-4 backdrop-blur">
-            <div className="grid grid-cols-2 items-center gap-4 md:grid-cols-7">
-              {brandLogos.map((brand) => (
-                <div key={brand.name} className="flex items-center justify-center rounded-xl px-2 py-2">
-                  <img src={brand.src} alt={brand.name} className="h-8 w-auto max-w-[120px] object-contain invert brightness-0 saturate-0" />
-                </div>
-              ))}
-              <Link
-                href="/listings"
-                className="col-span-2 md:col-span-1 inline-flex items-center justify-center rounded-full bg-[#f5c62d] px-6 py-3 text-sm font-semibold text-black hover:bg-[#e6b821] transition"
-              >
-                And More!
-              </Link>
-            </div>
-          </div>
+         <div className="mt-14 w-full max-w-[1160px] rounded-[24px] border border-white/8 bg-[linear-gradient(90deg,rgba(0,0,0,0.5)_0%,rgba(14,18,28,0.78)_50%,rgba(0,0,0,0.5)_100%)] px-5 py-1.5 shadow-[0_6px_18px_rgba(0,0,0,0.22)] backdrop-blur-sm">
+  <div className="flex items-center justify-between gap-2">
+    {brandLogos.map((brand) => (
+      <div key={brand.name} className="flex flex-1 items-center justify-center">
+        <img
+          src={brand.src}
+          alt={brand.name}
+          className={`${brand.className} w-auto max-w-[88px] object-contain opacity-80`}
+        />
+      </div>
+    ))}
+
+    <Link
+      href="/listings"
+      className="inline-flex h-[34px] min-w-[108px] shrink-0 items-center justify-center rounded-full bg-[#f5c62d] px-4 text-[14px] font-semibold text-black transition hover:bg-[#e6b821]"
+    >
+      And More!
+    </Link>
+  </div>
+</div>
         </div>
       </section>
 
       <section className="mx-auto max-w-[1120px] px-4 py-20 text-center">
-        <h2 className="text-5xl font-semibold leading-tight">Luxury Cars for Sale<br />
-          <span className="font-serif italic text-[#f2c66d]">at the Best Price</span>
+        <h2 className="text-5xl font-semibold leading-tight">
+          Luxury Cars for Sale
+          <br />
+          <span className="font-serif italic text-[#f2c66d]">
+            at the Best Price
+          </span>
         </h2>
         <div className="mt-10 grid gap-4 md:grid-cols-2">
           <div className="relative h-[460px] overflow-hidden rounded-2xl">
-            <Image src={featured[0] ? getFeaturedImage(featured[0]) : "/images/hero-listings.jpg"} alt="Inventory" fill className="object-cover" />
+            <Image
+              src={
+                featured[0]
+                  ? getFeaturedImage(featured[0])
+                  : "/images/hero-listings.jpg"
+              }
+              alt="Inventory"
+              fill
+              className="object-cover"
+            />
             <div className="absolute inset-0 bg-black/35" />
             <div className="absolute inset-x-0 bottom-8 text-center text-white">
               <p className="text-4xl font-semibold">Explore Luxury Cars</p>
-              <p className="font-serif text-5xl italic text-[#f5c852]">Incredible Discounts</p>
-              <Link href="/listings" className="mt-4 inline-block rounded-full bg-[#f5c62d] px-8 py-3 font-semibold text-black">{content.cta1}</Link>
+              <p className="font-serif text-5xl italic text-[#f5c852]">
+                Incredible Discounts
+              </p>
+              <Link
+                href="/listings"
+                className="mt-4 inline-block rounded-full bg-[#f5c62d] px-8 py-3 font-semibold text-black"
+              >
+                {content.cta1}
+              </Link>
             </div>
           </div>
           <div className="relative h-[460px] overflow-hidden rounded-2xl">
-            <Image src={featured[1] ? getFeaturedImage(featured[1]) : "/images/hero-consign.jpg"} alt="Consign" fill className="object-cover" />
+            <Image
+              src={
+                featured[1]
+                  ? getFeaturedImage(featured[1])
+                  : "/images/hero-consign.jpg"
+              }
+              alt="Consign"
+              fill
+              className="object-cover"
+            />
             <div className="absolute inset-0 bg-black/35" />
             <div className="absolute inset-x-0 bottom-8 text-center text-white">
               <p className="text-4xl font-semibold">Consign with the largest</p>
-              <p className="font-serif text-5xl italic text-[#f5c852]">Luxury Dealership</p>
-              <Link href="/consign" className="mt-4 inline-block rounded-full bg-[#f5c62d] px-8 py-3 font-semibold text-black">{content.cta2}</Link>
+              <p className="font-serif text-5xl italic text-[#f5c852]">
+                Luxury Dealership
+              </p>
+              <Link
+                href="/consign"
+                className="mt-4 inline-block rounded-full bg-[#f5c62d] px-8 py-3 font-semibold text-black"
+              >
+                {content.cta2}
+              </Link>
             </div>
           </div>
         </div>
@@ -216,10 +326,23 @@ export default function HomePage() {
       <section className="mx-auto max-w-[1700px] px-4 pb-16">
         <div className="rounded-3xl bg-black px-6 py-14 text-white md:px-14">
           <div className="grid gap-10 md:grid-cols-3">
-            {[{
-              icon: <ShieldCheck className="mx-auto text-[#f5c62d]" />, title: "Why Discerning Drivers Choose Us", text: "Elite brands, transparent support and a premium buying experience from start to finish."
-            }, { icon: <Handshake className="mx-auto text-[#f5c62d]" />, title: "Concierge-Like Service", text: "Our team helps you discover the perfect vehicle quickly, with full guidance on every step."
-            }, { icon: <CarFront className="mx-auto text-[#f5c62d]" />, title: "Unmatched Selection", text: "From modern exotics to timeless icons, we deliver one of the strongest luxury inventories." }].map((item) => (
+            {[
+              {
+                icon: <ShieldCheck className="mx-auto text-[#f5c62d]" />,
+                title: "Why Discerning Drivers Choose Us",
+                text: "Elite brands, transparent support and a premium buying experience from start to finish.",
+              },
+              {
+                icon: <Handshake className="mx-auto text-[#f5c62d]" />,
+                title: "Concierge-Like Service",
+                text: "Our team helps you discover the perfect vehicle quickly, with full guidance on every step.",
+              },
+              {
+                icon: <CarFront className="mx-auto text-[#f5c62d]" />,
+                title: "Unmatched Selection",
+                text: "From modern exotics to timeless icons, we deliver one of the strongest luxury inventories.",
+              },
+            ].map((item) => (
               <div key={item.title} className="text-center">
                 {item.icon}
                 <h3 className="mt-4 text-3xl font-semibold">{item.title}</h3>
@@ -231,53 +354,113 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-[1120px] px-4 py-12 text-center">
-        <h3 className="text-6xl font-semibold">Our <span className="font-serif italic text-[#f2c66d]">showrooms</span></h3>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-[#4e516a]">At Vercel2, we redefine the luxury car-buying experience with premium selection and dedicated support.</p>
+        <h3 className="text-6xl font-semibold">
+          Our{" "}
+          <span className="font-serif italic text-[#f2c66d]">showrooms</span>
+        </h3>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-[#4e516a]">
+          At Vercel2, we redefine the luxury car-buying experience with premium
+          selection and dedicated support.
+        </p>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {showroomCards.map((room, idx) => (
-            <article key={room.city} className="rounded-2xl bg-white p-3 shadow-sm">
+            <article
+              key={room.city}
+              className="rounded-2xl bg-white p-3 shadow-sm"
+            >
               <div className="relative h-44 overflow-hidden rounded-xl bg-gray-100">
-                <Image src={featured[idx + 2] ? getFeaturedImage(featured[idx + 2]) : "/images/hero-about.jpg"} alt={room.city} fill className="object-cover" />
+                <Image
+                  src={
+                    featured[idx + 2]
+                      ? getFeaturedImage(featured[idx + 2])
+                      : "/images/hero-about.jpg"
+                  }
+                  alt={room.city}
+                  fill
+                  className="object-cover"
+                />
               </div>
               <h4 className="mt-4 text-3xl font-semibold">{room.city}</h4>
               <p className="mt-2 text-sm text-[#4e516a]">{room.address}</p>
-              <p className="mt-1 flex items-center justify-center gap-2 text-sm font-medium"><Phone size={14} /> {room.phone}</p>
+              <p className="mt-1 flex items-center justify-center gap-2 text-sm font-medium">
+                <Phone size={14} /> {room.phone}
+              </p>
             </article>
           ))}
         </div>
-        <button className="mt-8 rounded-full bg-[#f5c62d] px-10 py-3 font-semibold text-black">See More</button>
+        <button className="mt-8 rounded-full bg-[#f5c62d] px-10 py-3 font-semibold text-black">
+          See More
+        </button>
       </section>
 
       <section className="mx-auto max-w-[1120px] px-4 py-12">
         <div className="relative h-[320px] overflow-hidden rounded-3xl">
-          <Image src={featured[5] ? getFeaturedImage(featured[5]) : "/images/hero-contact.jpg"} alt="Reviews" fill className="object-cover" />
+          <Image
+            src={
+              featured[5]
+                ? getFeaturedImage(featured[5])
+                : "/images/hero-contact.jpg"
+            }
+            alt="Reviews"
+            fill
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-black/45" />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white">
-            <h3 className="text-5xl font-semibold leading-tight">See what people have to say about <span className="font-serif italic text-[#f5c852]">Vercel2</span></h3>
-            <button className="mt-6 rounded-full bg-[#f5c62d] px-10 py-3 font-semibold text-black">View reviews</button>
+            <h3 className="text-5xl font-semibold leading-tight">
+              See what people have to say about{" "}
+              <span className="font-serif italic text-[#f5c852]">Vercel2</span>
+            </h3>
+            <button className="mt-6 rounded-full bg-[#f5c62d] px-10 py-3 font-semibold text-black">
+              View reviews
+            </button>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1120px] px-4 pb-14 pt-6 text-center">
-        <h3 className="text-6xl font-semibold">We <span className="font-serif italic text-[#f2c66d]">Support</span></h3>
-        <div className="mt-10 grid grid-cols-2 gap-4 text-gray-400 md:grid-cols-6">
-          {brands.map((brand) => (
-            <div key={`bottom-${brand}`} className="rounded-full border border-gray-300 bg-white px-3 py-4 text-sm font-semibold">{brand}</div>
-          ))}
-        </div>
-      </section>
+      <section className="mx-auto max-w-[1100px] px-4 pb-16 pt-8 text-center">
+  <h3 className="text-6xl font-semibold">
+    We <span className="font-serif italic text-[#f2c66d]">Support</span>
+  </h3>
+
+  <div className="mt-12 flex items-center justify-center gap-10">
+    {brandLogos.map((brand) => (
+      <img
+        key={`bottom-${brand.name}`}
+        src={brand.src}
+        alt={brand.name}
+        className="h-6 w-auto object-contain grayscale opacity-25 hover:opacity-60 transition"
+      />
+    ))}
+
+    <Link
+      href="/listings"
+      className="shrink-0 rounded-full bg-[#f5c62d] px-5 py-2 text-sm font-semibold text-black hover:bg-[#e6b821] transition"
+    >
+      And More!
+    </Link>
+  </div>
+</section>
 
       {role === "superadmin" && (
         <div className="pb-10 text-center">
-          <button onClick={() => (isEditing ? handleSave() : setIsEditing(true))} className={`rounded-full px-6 py-2 text-sm font-semibold text-white ${isEditing ? "bg-green-600" : "bg-[#1e2240]"}`}>
+          <button
+            onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+            className={`rounded-full px-6 py-2 text-sm font-semibold text-white ${isEditing ? "bg-green-600" : "bg-[#1e2240]"}`}
+          >
             {isEditing ? "💾 Save Changes" : "✏️ Edit Page"}
           </button>
-          {status && <p className="mt-3 text-sm font-medium text-green-600">{status}</p>}
+          {status && (
+            <p className="mt-3 text-sm font-medium text-green-600">{status}</p>
+          )}
         </div>
       )}
 
-      {loading && <div className="pb-8 text-center text-sm text-gray-500">Loading inventory...</div>}
+      {loading && (
+        <div className="pb-8 text-center text-sm text-gray-500">
+          Loading inventory...
+        </div>
+      )}
     </main>
   );
 }
