@@ -3,8 +3,14 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import CarLightbox from "./CarLightbox";
+import { ChevronLeft, ChevronRight, Image as ImageIcon, MapPin } from "lucide-react";
 
-export default function CarGallery({ schemaData }: { schemaData: any }) {
+interface CarGalleryProps {
+  schemaData: any;
+  location?: string;
+}
+
+export default function CarGallery({ schemaData, location }: CarGalleryProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -33,8 +39,6 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
       (key) => schemaData[key]?.images?.length > 0
     );
 
-    // normalizare la lowercase pentru comparație
-    const lower = keys.map((k) => k.toLowerCase());
 
     // ordinea preferată
     const preferred = [
@@ -59,15 +63,6 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
     // ORDINEA FINALĂ
     return [...orderedPreferred, ...remaining];
   }, [schemaData]);
-
-  // 🔹 2. SORTARE STABILĂ PENTRU IMAGINI
-  const sortImages = (images: any[]) =>
-    [...images].sort((a, b) =>
-      (a.name || "").localeCompare(b.name || "", undefined, {
-        numeric: true,
-        sensitivity: "base",
-      })
-    );
 
   // 🔹 3. COMBINĂM IMAGINILE ÎN ORDINE DETERMINISTĂ
 //il readaugam daca nu mai merge schema data in [id]
@@ -107,61 +102,97 @@ export default function CarGallery({ schemaData }: { schemaData: any }) {
     setIsOpen(true);
   };
 
+  const goToNext = () => {
+    setActiveIndex((prev) => (prev + 1) % Math.max(allImages.length, 1));
+  };
+
+  const goToPrev = () => {
+    setActiveIndex((prev) =>
+      (prev - 1 + Math.max(allImages.length, 1)) % Math.max(allImages.length, 1)
+    );
+  };
+
+  const mainImage = allImages[activeIndex] || allImages[0];
+  const sideIndexes = [1, 2, 3].map(
+    (offset) => (activeIndex + offset) % Math.max(allImages.length, 1)
+  );
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 w-full mb-8">
-      {/* 🔹 Imagine principală: prima din Exterior deoarece Exterior e primul în categories */}
-      <div className="lg:col-span-4 relative bg-gray-100 rounded-lg overflow-hidden">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full mb-8">
+      <div className="lg:col-span-2 relative bg-[#ececec] rounded-2xl overflow-hidden h-[340px] md:h-[520px]">
         <Image
-          src={allImages[0]?.src || "/images/placeholder-car.jpg"}
+          src={mainImage?.src || "/images/placeholder-car.jpg"}
           alt="Main Image"
           fill
           sizes="100vw"
           className="object-cover cursor-pointer"
-          onClick={() => openLightbox(0)}
+          onClick={() => openLightbox(activeIndex, mainImage?.category || "All")}
           priority
-          //   unoptimized
         />
-        <span className="absolute top-3 left-3 bg-gray-900/70 text-white text-xs px-2 py-1 rounded">
-          FEATURED ({allImages[0]?.category || "N/A"})
-        </span>
+
+        <div className="absolute top-4 left-4 flex items-center gap-2 z-10">
+          <span className="inline-flex items-center gap-2 bg-gray-700/55 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm">
+            <ImageIcon size={14} />
+            {allImages.length}
+          </span>
+          <span className="inline-flex items-center gap-2 bg-gray-700/55 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm">
+            <MapPin size={14} />
+            {location || "Orlando"}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={goToPrev}
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gray-400/40 hover:bg-gray-400/70 text-white flex items-center justify-center z-10"
+          aria-label="Previous image"
+        >
+          <ChevronLeft size={18} />
+        </button>
+
+        <button
+          type="button"
+          onClick={goToNext}
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gray-400/40 hover:bg-gray-400/70 text-white flex items-center justify-center z-10"
+          aria-label="Next image"
+        >
+          <ChevronRight size={18} />
+        </button>
       </div>
 
-      {/* 🔹 Thumbnails */}
-      <div className="lg:col-span-1 grid grid-cols-2 lg:grid-cols-1 gap-2">
-        {allImages.slice(1, 6).map((img, i) => (
-          <div
-            key={i}
-            className="relative h-[100px] md:h-[120px] rounded-lg overflow-hidden cursor-pointer group"
-            onClick={() => openLightbox(i + 1, img.category)}
+      <div className="grid grid-cols-2 gap-4 h-[340px] md:h-[520px]">
+        <button
+          type="button"
+          onClick={() => openLightbox(sideIndexes[0], allImages[sideIndexes[0]]?.category || "All")}
+          className="col-span-2 relative rounded-2xl overflow-hidden bg-[#ececec]"
+        >
+          <Image
+            src={allImages[sideIndexes[0]]?.src || "/images/placeholder-car.jpg"}
+            alt="Top side image"
+            fill
+            sizes="(max-width:1024px) 100vw, 33vw"
+            className="object-cover"
+          />
+        </button>
+
+        {sideIndexes.slice(1).map((index, idx) => (
+          <button
+            type="button"
+            key={index + idx}
+            onClick={() => openLightbox(index, allImages[index]?.category || "All")}
+            className="relative rounded-2xl overflow-hidden bg-[#ececec]"
           >
             <Image
-              src={img.src}
-              alt={`Thumbnail ${i}`}
+              src={allImages[index]?.src || "/images/placeholder-car.jpg"}
+              alt={`Side image ${idx + 1}`}
               fill
-              sizes="200px"
-              className="object-cover group-hover:scale-105 transition-transform"
-              //   unoptimized
+              sizes="(max-width:1024px) 50vw, 16vw"
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition"></div>
-
-            {i === 0 && (
-              <span className="absolute top-2 left-2 text-xs bg-gray-900/70 text-white px-2 py-1 rounded">
-                {img.category}
-              </span>
-            )}
-          </div>
+          </button>
         ))}
-
-        {/* 🔹 Buton All Photos */}
-        <div
-          onClick={() => setIsOpen(true)}
-          className="relative h-[100px] md:h-[120px] bg-gray-800 text-white flex items-center justify-center rounded-lg cursor-pointer hover:bg-gray-700 transition"
-        >
-          <p className="text-sm font-medium">All Photos ({allImages.length})</p>
-        </div>
       </div>
 
-      {/* 🔹 Lightbox */}
       {isOpen && (
         <CarLightbox
           images={allImages}
