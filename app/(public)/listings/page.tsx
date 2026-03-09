@@ -9,7 +9,8 @@ import CarFilters from "@/components/filters/CarFilters";
 import { getUserRole } from "@/lib/auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { useSearchParams } from "next/navigation";
+
+import { useSearchParams, useRouter } from "next/navigation";
 import { MapPin } from "lucide-react";
 
 function findValue(schemaData: any, key: string) {
@@ -48,28 +49,22 @@ function ListingsPage() {
   });
 
   const searchParams = useSearchParams();
-
+  const router = useRouter();
   useEffect(() => {
     if (searchParams.get("reset") === "1") setPage(1);
   }, [searchParams]);
 
   useEffect(() => {
     const q = searchParams.get("query");
-    if (q) {
-      setFilters((prev: any) => ({ ...prev, query: q }));
-    } else {
-      setFilters({
-        query: "",
-        yearFrom: "",
-        yearTo: "",
-        make: "",
-        model: "",
-        minPrice: "",
-        maxPrice: "",
-        sort: "",
-      });
-    }
-  }, [searchParams]);
+
+    if (!q) return;
+
+    setFilters((prev) => ({ ...prev, query: q }));
+
+    setTimeout(() => {
+      window.history.replaceState({}, "", "/listings");
+    }, 0);
+  }, []);
 
   const ITEMS_PER_PAGE = 15;
 
@@ -81,7 +76,8 @@ function ListingsPage() {
 
         const docRef = doc(db, "pages", "listings");
         const snap = await getDoc(docRef, { source: "server" });
-        if (snap.exists()) setContent((prev) => ({ ...prev, ...(snap.data() as any) }));
+        if (snap.exists())
+          setContent((prev) => ({ ...prev, ...(snap.data() as any) }));
         else await setDoc(docRef, content);
 
         setCars(await getCars());
@@ -106,23 +102,60 @@ function ListingsPage() {
 
   const filteredCars = cars
     .filter((car) => {
-      if (car.status && ["sold", "pending", "rejected", "draft"].includes(car.status.toLowerCase())) return false;
+      if (
+        car.status &&
+        ["sold", "pending", "rejected", "draft"].includes(
+          car.status.toLowerCase(),
+        )
+      )
+        return false;
 
-      const title = findValue(car.schemaData, "Title") || findValue(car.schemaData, "Titlu") || "";
-      const year = findValue(car.schemaData, "Year") || findValue(car.schemaData, "An fabricație") || "";
-      const make = findValue(car.schemaData, "Make") || findValue(car.schemaData, "Marcă") || car.make || "";
+      const title =
+        findValue(car.schemaData, "Title") ||
+        findValue(car.schemaData, "Titlu") ||
+        "";
+      const year =
+        findValue(car.schemaData, "Year") ||
+        findValue(car.schemaData, "An fabricație") ||
+        "";
+      const make =
+        findValue(car.schemaData, "Make") ||
+        findValue(car.schemaData, "Marcă") ||
+        car.make ||
+        "";
       const model = findValue(car.schemaData, "Model") || car.model || "";
-      const price = parseFloat(findValue(car.schemaData, "Price") || findValue(car.schemaData, "Preț") || car.price || 0) || 0;
+      const price =
+        parseFloat(
+          findValue(car.schemaData, "Price") ||
+            findValue(car.schemaData, "Preț") ||
+            car.price ||
+            0,
+        ) || 0;
 
       if (
         filters.query &&
-        !(title.toLowerCase().includes(filters.query.toLowerCase()) || make.toLowerCase().includes(filters.query.toLowerCase()) || model.toLowerCase().includes(filters.query.toLowerCase()))
-      ) return false;
+        !(
+          title.toLowerCase().includes(filters.query.toLowerCase()) ||
+          make.toLowerCase().includes(filters.query.toLowerCase()) ||
+          model.toLowerCase().includes(filters.query.toLowerCase())
+        )
+      )
+        return false;
 
-      if (filters.yearFrom && parseInt(year) < parseInt(filters.yearFrom)) return false;
-      if (filters.yearTo && parseInt(year) > parseInt(filters.yearTo)) return false;
-      if (filters.make && !make.toLowerCase().includes(filters.make.toLowerCase())) return false;
-      if (filters.model && !model.toLowerCase().includes(filters.model.toLowerCase())) return false;
+      if (filters.yearFrom && parseInt(year) < parseInt(filters.yearFrom))
+        return false;
+      if (filters.yearTo && parseInt(year) > parseInt(filters.yearTo))
+        return false;
+      if (
+        filters.make &&
+        !make.toLowerCase().includes(filters.make.toLowerCase())
+      )
+        return false;
+      if (
+        filters.model &&
+        !model.toLowerCase().includes(filters.model.toLowerCase())
+      )
+        return false;
 
       const min = parseFloat(filters.minPrice) || 0;
       const max = parseFloat(filters.maxPrice) || Infinity;
@@ -131,14 +164,38 @@ function ListingsPage() {
       return true;
     })
     .sort((a, b) => {
-      const priceA = parseFloat(findValue(a.schemaData, "Price") || findValue(a.schemaData, "Preț") || a.price || 0) || 0;
-      const priceB = parseFloat(findValue(b.schemaData, "Price") || findValue(b.schemaData, "Preț") || b.price || 0) || 0;
+      const priceA =
+        parseFloat(
+          findValue(a.schemaData, "Price") ||
+            findValue(a.schemaData, "Preț") ||
+            a.price ||
+            0,
+        ) || 0;
+      const priceB =
+        parseFloat(
+          findValue(b.schemaData, "Price") ||
+            findValue(b.schemaData, "Preț") ||
+            b.price ||
+            0,
+        ) || 0;
 
       if (filters.sort === "price_low") return priceA - priceB;
       if (filters.sort === "price_high") return priceB - priceA;
 
-      const yearA = parseInt(findValue(a.schemaData, "Year") || findValue(a.schemaData, "An fabricație") || a.year || 0) || 0;
-      const yearB = parseInt(findValue(b.schemaData, "Year") || findValue(b.schemaData, "An fabricație") || b.year || 0) || 0;
+      const yearA =
+        parseInt(
+          findValue(a.schemaData, "Year") ||
+            findValue(a.schemaData, "An fabricație") ||
+            a.year ||
+            0,
+        ) || 0;
+      const yearB =
+        parseInt(
+          findValue(b.schemaData, "Year") ||
+            findValue(b.schemaData, "An fabricație") ||
+            b.year ||
+            0,
+        ) || 0;
 
       if (filters.sort === "newest") return yearB - yearA;
       if (filters.sort === "oldest") return yearA - yearB;
@@ -146,7 +203,10 @@ function ListingsPage() {
     });
 
   const totalPages = Math.ceil(filteredCars.length / ITEMS_PER_PAGE);
-  const paginatedCars = filteredCars.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const paginatedCars = filteredCars.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE,
+  );
 
   return (
     <main className="min-h-screen bg-[#f2f2f2] text-[#111]">
@@ -160,20 +220,32 @@ function ListingsPage() {
             <div>
               <p className="text-xs text-gray-500">Used / Cars</p>
               {isEditing ? (
-                <input value={content.heroTitle} onChange={(e) => setContent({ ...content, heroTitle: e.target.value })} className="mt-1 rounded border px-2 py-1 text-3xl font-semibold" />
+                <input
+                  value={content.heroTitle}
+                  onChange={(e) =>
+                    setContent({ ...content, heroTitle: e.target.value })
+                  }
+                  className="mt-1 rounded border px-2 py-1 text-3xl font-semibold"
+                />
               ) : (
-                <h1 className="text-5xl font-semibold tracking-tight">{content.heroTitle || "Used cars for sale"}</h1>
+                <h1 className="text-5xl font-semibold tracking-tight">
+                  {content.heroTitle || "Used cars for sale"}
+                </h1>
               )}
-              <p className="mt-2 text-xl text-gray-600">{filteredCars.length} Found</p>
+              <p className="mt-2 text-xl text-gray-600">
+                {filteredCars.length} Found
+              </p>
             </div>
-
-            
           </div>
 
           {loading ? (
-            <p className="py-20 text-center text-gray-500">Loading listings...</p>
+            <p className="py-20 text-center text-gray-500">
+              Loading listings...
+            </p>
           ) : filteredCars.length === 0 ? (
-            <p className="py-20 text-center text-gray-500">No cars match your search.</p>
+            <p className="py-20 text-center text-gray-500">
+              No cars match your search.
+            </p>
           ) : (
             <>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
@@ -208,7 +280,9 @@ function ListingsPage() {
           >
             {isEditing ? "💾 Save Changes" : "✏️ Edit Page"}
           </button>
-          {status && <p className="mt-3 text-sm font-medium text-green-600">{status}</p>}
+          {status && (
+            <p className="mt-3 text-sm font-medium text-green-600">{status}</p>
+          )}
         </div>
       )}
     </main>
