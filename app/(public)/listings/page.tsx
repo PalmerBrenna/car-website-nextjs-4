@@ -56,6 +56,18 @@ function ListingsPage() {
 
   useEffect(() => {
     const q = searchParams.get("query");
+<<<<<<< Updated upstream
+=======
+
+    if (!q) return;
+
+    setFilters((prev) => ({ ...prev, query: q }));
+
+    setTimeout(() => {
+      window.history.replaceState({}, "", "/listings");
+    }, 0);
+  }, []);
+>>>>>>> Stashed changes
 
     if (!q) return;
 
