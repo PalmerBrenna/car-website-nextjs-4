@@ -88,7 +88,7 @@ export default function ContactPage() {
         <div className="relative z-10 max-w-6xl mx-auto px-6 pt-28 pb-20 text-center text-white">
           <h1 className="text-5xl md:text-7xl font-semibold leading-tight">
             Get in Touch
-            <span className="block italic text-[#e9c46a] font-normal">with HGreg Lux</span>
+            <span className="block italic text-[#e9c46a] font-normal">with Vercel2</span>
           </h1>
           <p className="mt-5 text-lg text-gray-100 max-w-3xl mx-auto leading-relaxed">
             Have questions about a car, financing, or selling your vehicle? Our team is here to help with a seamless luxury experience.

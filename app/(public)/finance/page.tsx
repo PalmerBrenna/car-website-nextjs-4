@@ -256,7 +256,7 @@ export default function FinancePage() {
 
           <div>
             <h3 className="text-4xl md:text-5xl font-semibold leading-tight text-[#171a36]">
-              HGreg Lux Exclusively
+              Vercel2 Exclusively
               <span className="block text-[#d7b15d] italic font-normal mt-1">
                 Low Rates
               </span>
@@ -264,7 +264,7 @@ export default function FinancePage() {
             <p className="text-gray-600 mt-6 leading-relaxed text-lg">
               It&apos;s no secret, our success in the industry gives us the
               benefits of incredibly low interest rates for those looking to
-              finance their luxury vehicle. At HGreg Lux, when you&apos;re one click
+              finance their luxury vehicle. At Vercel2, when you&apos;re one click
               away from getting the best rates on the market, nothing will stop
               you from driving home your dream car.
             </p>
@@ -282,7 +282,7 @@ export default function FinancePage() {
             <p className="text-gray-500 mt-4">A sound investment.</p>
             <p className="text-gray-600 mt-4 leading-relaxed">
               There is no need to take chances with your valued investment when
-              HGreg Lux offers a wide selection of warranty plans, catered to
+              Vercel2 offers a wide selection of warranty plans, catered to
               your every need.
             </p>
 
@@ -520,7 +520,7 @@ export default function FinancePage() {
             </h3>
             <p className="text-sm md:text-lg text-gray-200 mb-8">
               Whether you&apos;re looking to purchase, or finance your next vehicle
-              from HGreg Lux, our simple online financing form takes only a few
+              from Vercel2, our simple online financing form takes only a few
               minutes to fill out, and a response will be sent shortly!
             </p>
             <a

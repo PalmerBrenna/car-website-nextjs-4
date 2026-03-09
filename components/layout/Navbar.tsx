@@ -44,7 +44,7 @@ export default function Navbar() {
               className="h-10 w-auto"
             />
           ) : (
-            <span className="text-2xl font-semibold tracking-wider">HGREG LUX</span>
+            <span className="text-2xl font-semibold tracking-wider">Vercel2</span>
           )}
         </Link>
 

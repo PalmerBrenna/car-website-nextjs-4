@@ -130,7 +130,7 @@ export default function AboutPage() {
             <h1 className="text-4xl md:text-6xl font-semibold uppercase leading-tight">
               Redefining Luxury with
               <span className="block text-[#e9c46a] italic normal-case font-normal">
-                HGreg Lux
+                Vercel2
               </span>
             </h1>
 
@@ -156,13 +156,13 @@ export default function AboutPage() {
 
             <div className="mt-10 grid md:grid-cols-2 gap-4 text-left">
               {[
-                ["HGreg Lux Pompano Beach", "2500 West Sample Rd, Pompano Beach, FL, 33073"],
-                ["HGreg Lux West Palm Beach", "551 S Military Trl, Building 3, West Palm Beach, FL, 33415"],
-                ["HGreg Lux Costa Mesa", "2115 Harbor Blvd, Costa Mesa, CA, 92627"],
-                ["HGreg Lux Miami", "17305 S. Dixie Hwy, Miami, FL 33157"],
-                ["HGreg Lux Orlando", "2510 Jetport Dr, Suite B, Orlando, FL 32809"],
-                ["HGreg Lux Doral", "8505 NW 12th, Doral, FL 33126"],
-                ["HGreg Lux Houston (Coming Soon)", "6737 Southwest Fwy, Houston, TX 77074"],
+                ["Vercel2 Pompano Beach", "2500 West Sample Rd, Pompano Beach, FL, 33073"],
+                ["Vercel2 West Palm Beach", "551 S Military Trl, Building 3, West Palm Beach, FL, 33415"],
+                ["Vercel2 Costa Mesa", "2115 Harbor Blvd, Costa Mesa, CA, 92627"],
+                ["Vercel2 Miami", "17305 S. Dixie Hwy, Miami, FL 33157"],
+                ["Vercel2 Orlando", "2510 Jetport Dr, Suite B, Orlando, FL 32809"],
+                ["Vercel2 Doral", "8505 NW 12th, Doral, FL 33126"],
+                ["Vercel2 Houston (Coming Soon)", "6737 Southwest Fwy, Houston, TX 77074"],
               ].map(([title, address]) => (
                 <div
                   key={title}
@@ -183,7 +183,7 @@ export default function AboutPage() {
 
         <div className="max-w-6xl mx-auto space-y-10">
           <h2 className="text-5xl text-center font-semibold leading-tight text-[#272846]">
-            At <span className="text-[#e9c46a] italic font-normal">HGreg Lux</span>, we&apos;ve decided to redefine the status quo and
+            At <span className="text-[#e9c46a] italic font-normal">Vercel2</span>, we&apos;ve decided to redefine the status quo and
             <span className="text-[#e9c46a] italic font-normal"> do things differently</span>
           </h2>
 
@@ -227,7 +227,7 @@ export default function AboutPage() {
             <span className="text-[#e9c46a] italic font-normal"> the way</span>
           </h3>
           <p className="max-w-4xl mx-auto mt-4 text-xl text-gray-700 leading-relaxed">
-            We are enthusiastic to be part of the journey to find the craftsmanship you admire, and the qualities you desire, in your next luxury vehicle. At HGreg Lux, we believe helping you invest in a luxury vehicle requires superior expertise as well as genuine commitment, and our team is the ideal embodiment of what our company stands for.
+            We are enthusiastic to be part of the journey to find the craftsmanship you admire, and the qualities you desire, in your next luxury vehicle. At Vercel2, we believe helping you invest in a luxury vehicle requires superior expertise as well as genuine commitment, and our team is the ideal embodiment of what our company stands for.
           </p>
           <button
             onClick={() => (content.heroButtons[1]?.link ? (window.location.href = content.heroButtons[1].link) : undefined)}

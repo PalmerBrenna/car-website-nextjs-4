@@ -232,7 +232,7 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-[1120px] px-4 py-12 text-center">
         <h3 className="text-6xl font-semibold">Our <span className="font-serif italic text-[#f2c66d]">showrooms</span></h3>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-[#4e516a]">At HGreg Lux, we redefine the luxury car-buying experience with premium selection and dedicated support.</p>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-[#4e516a]">At Vercel2, we redefine the luxury car-buying experience with premium selection and dedicated support.</p>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {showroomCards.map((room, idx) => (
             <article key={room.city} className="rounded-2xl bg-white p-3 shadow-sm">
@@ -253,7 +253,7 @@ export default function HomePage() {
           <Image src={featured[5] ? getFeaturedImage(featured[5]) : "/images/hero-contact.jpg"} alt="Reviews" fill className="object-cover" />
           <div className="absolute inset-0 bg-black/45" />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white">
-            <h3 className="text-5xl font-semibold leading-tight">See what people have to say about <span className="font-serif italic text-[#f5c852]">HGreg Lux</span></h3>
+            <h3 className="text-5xl font-semibold leading-tight">See what people have to say about <span className="font-serif italic text-[#f5c852]">Vercel2</span></h3>
             <button className="mt-6 rounded-full bg-[#f5c62d] px-10 py-3 font-semibold text-black">View reviews</button>
           </div>
         </div>
