@@ -1,6 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
-import Image from "next/image";
+
 import { useEffect, useState, Suspense } from "react";
 import { getCars } from "@/lib/firestore";
 import { Car } from "@/lib/types";
@@ -9,7 +9,7 @@ import CarFilters from "@/components/filters/CarFilters";
 import { getUserRole } from "@/lib/auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-
+import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MapPin } from "lucide-react";
 
@@ -56,18 +56,6 @@ function ListingsPage() {
 
   useEffect(() => {
     const q = searchParams.get("query");
-<<<<<<< Updated upstream
-=======
-
-    if (!q) return;
-
-    setFilters((prev) => ({ ...prev, query: q }));
-
-    setTimeout(() => {
-      window.history.replaceState({}, "", "/listings");
-    }, 0);
-  }, []);
->>>>>>> Stashed changes
 
     if (!q) return;
 
