@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getCars } from "@/lib/firestore";
@@ -11,6 +11,7 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getUserRole } from "@/lib/auth";
 import type { Car } from "@/lib/types";
 import { CarFront, Handshake, ShieldCheck, Search, Phone } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 function findValue(schemaData: any, key: string) {
   if (!schemaData || typeof schemaData !== "object") return undefined;
@@ -45,11 +46,13 @@ export default function HomePage() {
   const [role, setRole] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [status, setStatus] = useState("");
+  const [homeSearch, setHomeSearch] = useState("");
+  const router = useRouter();
   const [content, setContent] = useState({
     heroSubtitle: "EXOTIC LUXURY CARS",
     heroTitle: "FOR SALE",
     heroText: "Quick search our inventory by Stock, Make or Model",
-    heroImage: "/images/hero-vintage.jpg",
+    heroImage: "/images/hero-listings.jpg",
     cta1: "Browse our Inventory",
     cta2: "Consign with us",
     bannerTitle: "See what people have to say about us",
@@ -107,16 +110,37 @@ export default function HomePage() {
 
   const brands = ["BMW", "PORSCHE", "FERRARI", "LAMBORGHINI", "RANGE ROVER", "MASERATI"];
 
+  const brandLogos = [
+    { name: "BMW", src: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg" },
+    { name: "Porsche", src: "https://upload.wikimedia.org/wikipedia/commons/7/70/Porsche_Logo.svg" },
+    { name: "Ferrari", src: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Ferrari-Logo.svg" },
+    { name: "Lamborghini", src: "https://upload.wikimedia.org/wikipedia/en/d/df/Lamborghini_Logo.svg" },
+    { name: "Range Rover", src: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Land_Rover_logo_black.svg" },
+    { name: "Maserati", src: "https://upload.wikimedia.org/wikipedia/commons/1/13/Maserati_logo.svg" },
+  ];
+
+  const handleHomeSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (!homeSearch.trim()) return;
+    router.push(`/listings?query=${encodeURIComponent(homeSearch.trim())}`);
+    setHomeSearch("");
+  };
+
   const showroomCards = [
     { city: "Orlando", address: "2510 Jetport Dr, Suite B", phone: "407 680 1635", image: "/public-showroom-orlando.jpg" },
     { city: "Pompano Beach", address: "2500 West Sample Rd", phone: "754-318-9003", image: "/public-showroom-pompano.jpg" },
     { city: "Miami", address: "17305 S Dixie Hwy", phone: "305-259-2638", image: "/public-showroom-miami.jpg" },
   ];
 
+  const heroImageToShow =
+    !content.heroImage || content.heroImage === "/images/hero-vintage.jpg"
+      ? "/images/hero-listings.jpg"
+      : content.heroImage;
+
   return (
     <main className="bg-[#f3f3f3] text-[#1e2240]">
       <section className="relative min-h-[760px] overflow-hidden">
-        <Image src={content.heroImage} alt="Hero" fill priority className="object-cover" />
+        <Image src={heroImageToShow} alt="Hero" fill priority className="object-cover" />
         <div className="absolute inset-0 bg-black/45" />
         <div className="relative mx-auto flex min-h-[760px] w-full max-w-[1280px] flex-col items-center px-4 pb-16 pt-28 text-center text-white">
           {isEditing ? (
@@ -130,17 +154,35 @@ export default function HomePage() {
             <>
               <h1 className="text-5xl font-semibold uppercase tracking-wide md:text-7xl">{content.heroSubtitle}</h1>
               <p className="mt-2 font-serif text-5xl italic text-[#f2c94c] md:text-6xl">{content.heroTitle}</p>
-              <div className="mt-8 flex w-full max-w-2xl items-center overflow-hidden rounded-full bg-white px-5 py-3 text-gray-500 shadow-xl">
-                <span className="flex-1 text-left">{content.heroText}</span>
-                <button className="rounded-full bg-[#f5c62d] p-3 text-black"><Search size={18} /></button>
-              </div>
+              <form onSubmit={handleHomeSearch} className="mt-8 flex w-full max-w-2xl items-center overflow-hidden rounded-full bg-white px-5 py-3 text-gray-500 shadow-xl">
+                <input
+                  type="text"
+                  value={homeSearch}
+                  onChange={(e) => setHomeSearch(e.target.value)}
+                  placeholder={content.heroText || "Search by stock, make or model"}
+                  className="flex-1 bg-transparent text-left text-sm text-gray-700 outline-none"
+                />
+                <button type="submit" className="rounded-full bg-[#f5c62d] p-3 text-black hover:bg-[#e6b821] transition">
+                  <Search size={18} />
+                </button>
+              </form>
             </>
           )}
 
-          <div className="mt-14 grid w-full max-w-5xl grid-cols-2 gap-3 rounded-2xl bg-black/60 p-4 text-xs font-semibold uppercase tracking-wider backdrop-blur md:grid-cols-6">
-            {brands.map((brand) => (
-              <div key={brand} className="flex items-center justify-center text-white/90">{brand}</div>
-            ))}
+          <div className="mt-14 w-full max-w-6xl rounded-[24px] bg-gradient-to-r from-black/70 via-[#101826]/85 to-black/70 px-4 py-4 backdrop-blur">
+            <div className="grid grid-cols-2 items-center gap-4 md:grid-cols-7">
+              {brandLogos.map((brand) => (
+                <div key={brand.name} className="flex items-center justify-center rounded-xl px-2 py-2">
+                  <img src={brand.src} alt={brand.name} className="h-8 w-auto max-w-[120px] object-contain invert brightness-0 saturate-0" />
+                </div>
+              ))}
+              <Link
+                href="/listings"
+                className="col-span-2 md:col-span-1 inline-flex items-center justify-center rounded-full bg-[#f5c62d] px-6 py-3 text-sm font-semibold text-black hover:bg-[#e6b821] transition"
+              >
+                And More!
+              </Link>
+            </div>
           </div>
         </div>
       </section>
