@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Heart, Phone, Search } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -11,14 +11,13 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [siteInfo, setSiteInfo] = useState<any>(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchSiteInfo = async () => {
       try {
-        const refDoc = doc(db, "settings", "site_info");
-        const snap = await getDoc(refDoc);
+        const snap = await getDoc(doc(db, "settings", "site_info"));
         if (snap.exists()) setSiteInfo(snap.data());
       } catch (err) {
         console.error(err);
@@ -27,175 +26,66 @@ export default function Navbar() {
     fetchSiteInfo();
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (search.trim()) {
-      router.push(`/listings?query=${encodeURIComponent(search.trim())}`);
-      setSearch("");
-      setOpen(false);
-    }
-  };
-
   const navLinks = [
-    { href: "/", label: "Home" },
     { href: "/listings", label: "Find Your Car" },
-    { href: "/sold", label: "Sold" },
-    
     { href: "/consign", label: "Consignment" },
-    { href: "/shipping", label: "Shipping" },
-    { href: "/about", label: "About" },
+    { href: "/sold", label: "Sell or Trade" },
+    { href: "/finance", label: "Financing" },
+    { href: "/about", label: "About Us" },
   ];
 
-  const handleNavClick = (href: string) => {
-    if (pathname === href) {
-      window.location.reload(); // Hard refresh EXACT ca F5
-    } else {
-      router.push(href);
-    }
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!search.trim()) return;
+    router.push(`/listings?query=${encodeURIComponent(search.trim())}`);
     setOpen(false);
+    setSearch("");
   };
 
   return (
-    <nav className="bg-white text-gray-800 shadow-sm sticky top-0 z-50 border-b border-gray-200">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3 md:py-4">
-        <Link href="/" className="flex items-center space-x-2">
+    <nav className="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-black/70 to-transparent text-white">
+      <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between px-4 py-5">
+        <Link href="/" className="flex items-center gap-2">
           {siteInfo?.logoUrl ? (
-            <img
-              src={siteInfo.logoUrl}
-              alt={siteInfo.siteName || "Logo"}
-              className="h-10 w-auto object-contain"
-            />
+            <img src={siteInfo.logoUrl} alt={siteInfo.siteName || "Logo"} className="h-10 w-auto" />
           ) : (
-            <>
-              <span className="text-2xl font-bold text-blue-600">
-                {siteInfo?.siteName?.split(" ")[0] || "Dariella"}
-              </span>
-              <span className="text-2xl font-bold text-gray-900">
-                {siteInfo?.siteName?.split(" ")[1] || "Motors"}
-              </span>
-            </>
+            <span className="text-2xl font-semibold tracking-wider">HGREG LUX</span>
           )}
         </Link>
 
-        <form
-          onSubmit={handleSearch}
-          className="hidden md:flex items-center bg-gray-100 rounded-full overflow-hidden px-4 py-1.5 w-[400px] lg:w-[500px] xl:w-[600px] border border-gray-200"
-        >
-          <Search size={18} className="text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search cars (e.g. BMW, Audi, Ford)..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent outline-none text-sm text-gray-700 px-2 flex-1"
-          />
-          <button
-            type="submit"
-            aria-label="Search"
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition ml-1"
-          >
-            <Search size={16} />
-          </button>
-        </form>
-
-        <div className="hidden md:flex items-center space-x-6 font-medium">
+        <div className="hidden items-center gap-8 text-sm font-medium md:flex">
           {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick(link.href);
-              }}
-              className={`transition ${
-                pathname === link.href
-                  ? "text-blue-600 font-semibold"
-                  : "text-gray-700 hover:text-blue-600"
-              }`}
-            >
+            <Link key={link.href} href={link.href} className={pathname === link.href ? "text-[#f5c62d]" : "text-white/90 hover:text-[#f5c62d]"}>
               {link.label}
             </Link>
           ))}
-
-          <Link
-            href="/contact"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-300/50"
-          >
-            Contact
-          </Link>
         </div>
 
-        <button
-          onClick={() => setOpen(!open)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          className="md:hidden text-gray-600 hover:text-blue-600"
-        >
-          {open ? <X size={28} /> : <Menu size={28} />}
+        <div className="hidden items-center gap-3 md:flex">
+          <button className="rounded-full border border-white/30 p-2 hover:border-[#f5c62d] hover:text-[#f5c62d]"><Heart size={16} /></button>
+          <a href={`tel:${siteInfo?.phone || "7543189003"}`} className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-black">
+            <Phone size={14} /> {siteInfo?.phone || "754-318-9003"}
+          </a>
+        </div>
+
+        <button onClick={() => setOpen((prev) => !prev)} className="md:hidden">
+          {open ? <X /> : <Menu />}
         </button>
       </div>
 
       {open && (
-        <div className="md:hidden bg-white border-t border-gray-200 shadow-sm">
-          <form
-            onSubmit={handleSearch}
-            className="flex items-center bg-gray-100 rounded-full overflow-hidden px-3 py-2 m-4 border border-gray-200"
-          >
-            <Search size={18} className="text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search cars..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent outline-none text-sm text-gray-700 px-2 flex-1"
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition ml-1"
-            >
-              <Search size={16} />
-            </button>
+        <div className="border-t border-white/10 bg-[#121429] px-4 pb-5 pt-3 md:hidden">
+          <form onSubmit={handleSearch} className="mb-3 flex items-center rounded-full bg-white px-4 py-2 text-black">
+            <Search size={16} />
+            <input className="ml-2 flex-1 bg-transparent text-sm outline-none" placeholder="Search inventory" value={search} onChange={(e) => setSearch(e.target.value)} />
           </form>
-
-          <ul className="flex flex-col space-y-2 px-6 pb-4 font-medium">
+          <div className="space-y-2">
             {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(link.href);
-                  }}
-                  className={`block py-2 transition ${
-                    pathname === link.href
-                      ? "text-blue-600 font-semibold"
-                      : "text-gray-700 hover:text-blue-600"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              </li>
+              <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className="block rounded-lg px-2 py-2 text-sm text-white/90 hover:bg-white/10">
+                {link.label}
+              </Link>
             ))}
-
-            <li>
-              <Link
-                href="/dashboard/cars/new"
-                onClick={() => setOpen(false)}
-                className="block bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full text-center font-semibold transition"
-              >
-                Sell a Car
-              </Link>
-            </li>
-
-            <li>
-              <Link
-                href="/auth/login"
-                onClick={() => setOpen(false)}
-                className="block border border-gray-300 hover:border-blue-500 text-gray-700 hover:text-blue-600 px-4 py-2 rounded-full text-center transition"
-              >
-                Login
-              </Link>
-            </li>
-          </ul>
+          </div>
         </div>
       )}
     </nav>
