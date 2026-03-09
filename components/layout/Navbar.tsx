@@ -29,6 +29,7 @@ export default function Navbar() {
     { href: "/consign", label: "Consignment" },
     { href: "/sold", label: "Sold Vehicles" },
     { href: "/finance", label: "Financing" },
+    { href: "/shipping", label: "Shipping" },
     { href: "/about", label: "About Us" },
     { href: "/contact", label: "Contact Us" },
   ];
