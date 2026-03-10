@@ -7,10 +7,10 @@ import { ChevronLeft, ChevronRight, Image as ImageIcon, MapPin } from "lucide-re
 
 interface CarGalleryProps {
   schemaData: any;
-  location?: string;
+  
 }
 
-export default function CarGallery({ schemaData, location }: CarGalleryProps) {
+export default function CarGallery({ schemaData }: CarGalleryProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -135,10 +135,7 @@ export default function CarGallery({ schemaData, location }: CarGalleryProps) {
             <ImageIcon size={14} />
             {allImages.length}
           </span>
-          <span className="inline-flex items-center gap-2 bg-gray-700/55 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm">
-            <MapPin size={14} />
-            {location || "Orlando"}
-          </span>
+          
         </div>
 
         <button

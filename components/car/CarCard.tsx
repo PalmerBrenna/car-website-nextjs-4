@@ -158,12 +158,7 @@ export default function CarCard({ car }: Props) {
         </p>
 
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-[#e2e2e2] bg-white px-2.5 py-1 text-xs text-gray-600">
-            {mileage ? `${formatNumber(mileage)} mi` : "Mileage N/A"}
-          </span>
-          <span className="rounded-full border border-[#e2e2e2] bg-white px-2.5 py-1 text-xs text-gray-600">
-            {location || "Orlando, FL"}
-          </span>
+          
           <Link href={`/listings/${car.id}`} className="hidden" />
         </div>
       </div>

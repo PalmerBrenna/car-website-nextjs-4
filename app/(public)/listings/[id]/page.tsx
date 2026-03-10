@@ -112,7 +112,7 @@ export default function CarDetailsPage() {
   const model = deepFindValue(car.schemaData, "Model") || "—";
   const year = deepFindValue(car.schemaData, "Year") || undefined;
   const mileage = deepFindValue(car.schemaData, "Mileage") || undefined;
-  const location = deepFindValue(car.schemaData, "Location") || "Orlando";
+  
   //const stockSection = deepFindValue(car.schemaData, "Stock");
   const stock = findStockValue(car.schemaData) || "—";
 
